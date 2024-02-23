@@ -1,0 +1,26 @@
+FROM quay.io/fedora-ostree-desktops/silverblue:40
+
+# Keep container image for 3 weeks
+#LABEL quay.expires-after=3w
+
+LABEL org.opencontainers.image.title="Fedora SilverBlue"
+LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue"
+LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
+LABEL org.opencontainers.image.licenses="MIT"
+
+RUN rpm-ostree install \
+        htop \
+        arm-image-installer \
+        coreos-installer \
+        gnome-console \
+        virt-install \
+        virt-manager \
+        smartmontools \
+    && \
+    rpm-ostree override remove noopenh264 --install mozilla-openh264 \
+    && \
+    systemctl enable libvirtd.socket \
+    && \
+    rm --recursive --force /var/lib/unbound/root.key
+    
+RUN ostree container commit
