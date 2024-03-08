@@ -17,8 +17,6 @@ RUN rpm-ostree install \
         virt-manager \
         smartmontools \
     && \
-    rpm-ostree override remove nano-default-editor --install vim-default-editor \
-    && \
     rpm-ostree override remove noopenh264 --install mozilla-openh264 \
     && \
     systemctl enable libvirtd.socket \
