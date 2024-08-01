@@ -8,8 +8,25 @@ LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlu
 LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
 LABEL org.opencontainers.image.licenses="MIT"
 
-RUN rpm-ostree install \
+# Copy custom config to /usr & /etc
+#COPY usr usr
+#COPY etc etc
+
+# - Replace noopenh264 with openh264
+# - Install various packages
+# - Enable libvirtd
+# - Misc /var cleanup
+# - Remove SetUID/SetGID bits
+RUN rpm-ostree override remove noopenh264 --install mozilla-openh264 \
+    && \
+    rpm-ostree override remove nano nano-default-editor --install vim-default-editor \
+    && \
+    rpm-ostree install \
         htop \
+        iotop \
+        netcat \
+        sysprof \
+        krb5-workstation \
         arm-image-installer \
         coreos-installer \
         gnome-console \
@@ -17,10 +34,20 @@ RUN rpm-ostree install \
         virt-manager \
         smartmontools \
     && \
-    rpm-ostree override remove noopenh264 --install mozilla-openh264 \
-    && \
     systemctl enable libvirtd.socket \
     && \
-    rm --recursive --force /var/lib/unbound/root.key
-    
-RUN ostree container commit
+    rm --recursive --force /var/lib/unbound/root.key \
+    && \
+    chmod ug-s \
+        /usr/bin/chage \
+        /usr/bin/chfn \
+        /usr/bin/chsh \
+        /usr/bin/gpasswd \
+        /usr/bin/ksu \
+        /usr/bin/newgrp \
+        /usr/bin/passwd \
+        /usr/bin/vmware-user-suid-wrapper \
+    && \
+    rpm-ostree cleanup --repomd \
+    && \
+    ostree container commit
