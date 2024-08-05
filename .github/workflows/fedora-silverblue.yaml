@@ -3,7 +3,9 @@ name: "Build Fedora SilverBlue Images"
 env:
   NAME: "fedora-silverblue"
   REGISTRY: "quay.io/operatement"
-  BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:40"
+  BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:41"
+  # Temporary switch to quay.io/fedora/fedora-silverblue:41
+  #BASEIMAGE: "quay.io/fedora/fedora-silverblue:41"
 
 on:
 
@@ -23,6 +25,8 @@ on:
       
   schedule:
     - cron: '0 4 * * *'
+    # Temporary switch to quay.io/fedora/fedora-silverblue:41
+    #- cron: '30 13 * * *'
     
   workflow_dispatch:
     inputs:
@@ -71,35 +75,48 @@ jobs:
         env:
           VERSION: ${{ inputs.version }}
 
-      - name: Build SilverBlue Container Image
+      - name: Build SilverBlue 41 Container Image
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.NAME }}
-          tags: '40'
-          containerfiles: ${{ env.NAME }}/Containerfile
+          tags: '41'
+          containerfiles: ${{ env.NAME }}/Containerfile-41
           context: ${{ env.NAME }}
           layers: false
           oci: true
+          labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
-      - name: Build SilverBlue 40 Base Container Image
+      - name: Build SilverBlue 41 Testing Container Image
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.NAME }}
-          tags: '40-base'
-          containerfiles: ${{ env.NAME }}/Containerfile-40-base
+          tags: '41-testing'
+          containerfiles: ${{ env.NAME }}/Containerfile-41-testing
           context: ${{ env.NAME }}
           layers: false
           oci: true
+          labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
-      - name: Build SilverBlue RawHide Base Container Image
+#      - name: Build SilverBlue 40 Container Image
+#        uses: redhat-actions/buildah-build@v2
+#        with:
+#          image: ${{ env.NAME }}
+#          tags: '40'
+#          containerfiles: ${{ env.NAME }}/Containerfile-40
+#          context: ${{ env.NAME }}
+#          layers: false
+#          oci: true
+
+      - name: Build SilverBlue RawHide Container Image
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.NAME }}
-          tags: 'rawhide-base'
-          containerfiles: ${{ env.NAME }}/Containerfile-rawhide-base
+          tags: 'rawhide'
+          containerfiles: ${{ env.NAME }}/Containerfile-rawhide
           context: ${{ env.NAME }}
           layers: false
           oci: true
+          labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
       - name: Login to Container Registry
         uses: redhat-actions/podman-login@v1
@@ -109,74 +126,97 @@ jobs:
           username: ${{ secrets.BOT_USERNAME }}
           password: ${{ secrets.BOT_SECRET }}
 
-      - uses: sigstore/cosign-installer@v3.5.0
+      - uses: sigstore/cosign-installer@v3.7.0
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
 
-      # Container Image
-      - name: Push to Container Registry
+      # SilverBlue 41 Container Image
+      - name: Push SilverBlue 41 Image to Container Registry
         uses: redhat-actions/push-to-registry@v2
-        id: push
+        id: push-41
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         with:
           username: ${{ secrets.BOT_USERNAME }}
           password: ${{ secrets.BOT_SECRET }}
           image: ${{ env.NAME }}
           registry: ${{ env.REGISTRY }}
-          tags: '40'
+          tags: '41'
           extra-args: |
             --compression-format=zstd:chunked
             --compression-level=19
 
-      - name: Sign Container Image
+      - name: Sign SilverBlue 41 Container Image
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push.outputs.digest }}
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-41.outputs.digest }}
         env:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
-      # 40 Base Container Image
-      - name: Push 40 Base to Container Registry
+      # SilverBlue 41 Testing Container Image
+      - name: Push SilverBlue 41 Testing Image to Container Registry
         uses: redhat-actions/push-to-registry@v2
-        id: push-40-base
+        id: push-41-testing
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         with:
           username: ${{ secrets.BOT_USERNAME }}
           password: ${{ secrets.BOT_SECRET }}
           image: ${{ env.NAME }}
           registry: ${{ env.REGISTRY }}
-          tags: '40-base'
+          tags: '41-testing'
           extra-args: |
             --compression-format=zstd:chunked
             --compression-level=19
 
-      - name: Sign 40 Base Container Image
+      - name: Sign SilverBlue Testing 41 Container Image
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-40-base.outputs.digest }}
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-41-testing.outputs.digest }}
         env:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
-      # Rawhide Base Container Image
-      - name: Push Rawhide Base to Container Registry
+#      # SilverBlue 40 Container Image
+#      - name: Push SilverBlue 40 Image to Container Registry
+#        uses: redhat-actions/push-to-registry@v2
+#        id: push-40
+#        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+#        with:
+#          username: ${{ secrets.BOT_USERNAME }}
+#          password: ${{ secrets.BOT_SECRET }}
+#          image: ${{ env.NAME }}
+#          registry: ${{ env.REGISTRY }}
+#          tags: '40'
+#          extra-args: |
+#            --compression-format=zstd:chunked
+#            --compression-level=19
+#
+#      - name: Sign SilverBlue 40 Container Image
+#        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+#        run: |
+#          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-40.outputs.digest }}
+#        env:
+#          COSIGN_EXPERIMENTAL: false
+#          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+
+      # Rawhide Container Image
+      - name: Push SilverBlue Rawhide Image to Container Registry
         uses: redhat-actions/push-to-registry@v2
-        id: push-rawhide-base
+        id: push-rawhide
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         with:
           username: ${{ secrets.BOT_USERNAME }}
           password: ${{ secrets.BOT_SECRET }}
           image: ${{ env.NAME }}
           registry: ${{ env.REGISTRY }}
-          tags: 'rawhide-base'
+          tags: 'rawhide'
           extra-args: |
             --compression-format=zstd:chunked
             --compression-level=19
 
-      - name: Sign Rawhide Base Container Image
+      - name: Sign SilverBlue Rawhide Container Image
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-rawhide-base.outputs.digest }}
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-rawhide.outputs.digest }}
         env:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}

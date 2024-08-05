@@ -1,8 +1,0 @@
-FROM quay.io/fedora-ostree-desktops/silverblue:40
-
-LABEL org.opencontainers.image.title="Fedora SilverBlue"
-LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue"
-LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
-LABEL org.opencontainers.image.licenses="MIT"
-
-RUN ostree container commit
