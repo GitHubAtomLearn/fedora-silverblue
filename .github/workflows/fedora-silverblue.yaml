@@ -3,7 +3,7 @@ name: "Build Fedora SilverBlue Images"
 env:
   NAME: "fedora-silverblue"
   REGISTRY: "quay.io/operatement"
-  BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:40"
+  BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:41"
 
 on:
 
@@ -75,31 +75,31 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.NAME }}
-          tags: '40'
+          tags: '41'
           containerfiles: ${{ env.NAME }}/Containerfile
           context: ${{ env.NAME }}
           layers: false
           oci: true
 
-      - name: Build SilverBlue 40 Base Container Image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: ${{ env.NAME }}
-          tags: '40-base'
-          containerfiles: ${{ env.NAME }}/Containerfile-40-base
-          context: ${{ env.NAME }}
-          layers: false
-          oci: true
-
-      - name: Build SilverBlue RawHide Base Container Image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: ${{ env.NAME }}
-          tags: 'rawhide-base'
-          containerfiles: ${{ env.NAME }}/Containerfile-rawhide-base
-          context: ${{ env.NAME }}
-          layers: false
-          oci: true
+#      - name: Build SilverBlue 41 Base Container Image
+#        uses: redhat-actions/buildah-build@v2
+#        with:
+#          image: ${{ env.NAME }}
+#          tags: '41-base'
+#          containerfiles: ${{ env.NAME }}/Containerfile-41-base
+#          context: ${{ env.NAME }}
+#          layers: false
+#          oci: true
+#
+#      - name: Build SilverBlue RawHide Base Container Image
+#        uses: redhat-actions/buildah-build@v2
+#        with:
+#          image: ${{ env.NAME }}
+#          tags: 'rawhide-base'
+#          containerfiles: ${{ env.NAME }}/Containerfile-rawhide-base
+#          context: ${{ env.NAME }}
+#          layers: false
+#          oci: true
 
       - name: Login to Container Registry
         uses: redhat-actions/podman-login@v1
@@ -109,7 +109,7 @@ jobs:
           username: ${{ secrets.BOT_USERNAME }}
           password: ${{ secrets.BOT_SECRET }}
 
-      - uses: sigstore/cosign-installer@v3.5.0
+      - uses: sigstore/cosign-installer@v3.6.0
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
 
       # Container Image
@@ -122,7 +122,7 @@ jobs:
           password: ${{ secrets.BOT_SECRET }}
           image: ${{ env.NAME }}
           registry: ${{ env.REGISTRY }}
-          tags: '40'
+          tags: '41'
           extra-args: |
             --compression-format=zstd:chunked
             --compression-level=19
@@ -135,48 +135,48 @@ jobs:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
-      # 40 Base Container Image
-      - name: Push 40 Base to Container Registry
-        uses: redhat-actions/push-to-registry@v2
-        id: push-40-base
-        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        with:
-          username: ${{ secrets.BOT_USERNAME }}
-          password: ${{ secrets.BOT_SECRET }}
-          image: ${{ env.NAME }}
-          registry: ${{ env.REGISTRY }}
-          tags: '40-base'
-          extra-args: |
-            --compression-format=zstd:chunked
-            --compression-level=19
-
-      - name: Sign 40 Base Container Image
-        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-40-base.outputs.digest }}
-        env:
-          COSIGN_EXPERIMENTAL: false
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
-
-      # Rawhide Base Container Image
-      - name: Push Rawhide Base to Container Registry
-        uses: redhat-actions/push-to-registry@v2
-        id: push-rawhide-base
-        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        with:
-          username: ${{ secrets.BOT_USERNAME }}
-          password: ${{ secrets.BOT_SECRET }}
-          image: ${{ env.NAME }}
-          registry: ${{ env.REGISTRY }}
-          tags: 'rawhide-base'
-          extra-args: |
-            --compression-format=zstd:chunked
-            --compression-level=19
-
-      - name: Sign Rawhide Base Container Image
-        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-rawhide-base.outputs.digest }}
-        env:
-          COSIGN_EXPERIMENTAL: false
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+#      # 41 Base Container Image
+#      - name: Push 41 Base to Container Registry
+#        uses: redhat-actions/push-to-registry@v2
+#        id: push-41-base
+#        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+#        with:
+#          username: ${{ secrets.BOT_USERNAME }}
+#          password: ${{ secrets.BOT_SECRET }}
+#          image: ${{ env.NAME }}
+#          registry: ${{ env.REGISTRY }}
+#          tags: '41-base'
+#          extra-args: |
+#            --compression-format=zstd:chunked
+#            --compression-level=19
+#
+#      - name: Sign 41 Base Container Image
+#        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+#        run: |
+#          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-41-base.outputs.digest }}
+#        env:
+#          COSIGN_EXPERIMENTAL: false
+#          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+#
+#      # Rawhide Base Container Image
+#      - name: Push Rawhide Base to Container Registry
+#        uses: redhat-actions/push-to-registry@v2
+#        id: push-rawhide-base
+#        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+#        with:
+#          username: ${{ secrets.BOT_USERNAME }}
+#          password: ${{ secrets.BOT_SECRET }}
+#          image: ${{ env.NAME }}
+#          registry: ${{ env.REGISTRY }}
+#          tags: 'rawhide-base'
+#          extra-args: |
+#            --compression-format=zstd:chunked
+#            --compression-level=19
+#
+#      - name: Sign Rawhide Base Container Image
+#        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+#        run: |
+#          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-rawhide-base.outputs.digest }}
+#        env:
+#          COSIGN_EXPERIMENTAL: false
+#          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
