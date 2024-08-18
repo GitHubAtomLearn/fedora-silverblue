@@ -24,7 +24,9 @@ on:
       - '.github/workflows/fedora-silverblue.yaml'
       
   schedule:
-    - cron: '0 4 * * *'
+    #- cron: '0 4 * * *'
+    # Temporary switch to quay.io/fedora/fedora-silverblue:41
+    - cron: '30 13 * * *'
     
   workflow_dispatch:
     inputs:

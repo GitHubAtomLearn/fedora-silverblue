@@ -1,5 +1,5 @@
 #FROM quay.io/fedora-ostree-desktops/silverblue:41
-# Temporary switch to quay.io/fedora/fedora-silverblue
+# Temporary switch to quay.io/fedora/fedora-silverblue:41
 FROM quay.io/fedora/fedora-silverblue:41
 
 # Keep container image for 3 weeks
@@ -14,7 +14,10 @@ LABEL org.opencontainers.image.licenses="MIT"
 #COPY usr usr
 #COPY etc etc
 
+# - Install dnf5
+# - Install RPM Fusion Free and Nonfree Repositories
 # - Replace noopenh264 with openh264
+# - Replace nano with vim
 # - Install various packages
 # - Enable libvirtd
 # - Misc /var cleanup
@@ -23,8 +26,6 @@ RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
     dnf5 \
     dnf5-plugins \
 #    dnf5-plugin-automatic \
-#    && \
-#    dnf --version \
     && \
 #    rpm-ostree install --apply-live --assumeyes --allow-inactive \
     dnf --assumeyes install \
