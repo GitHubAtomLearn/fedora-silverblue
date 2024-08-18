@@ -46,6 +46,7 @@ RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
 #    rpm-ostree install \
     dnf --assumeyes install \
         akmod-nvidia \
+        bootc \
         htop \
         iotop \
         netcat \
@@ -72,6 +73,6 @@ RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
         /usr/bin/passwd \
         /usr/bin/vmware-user-suid-wrapper \
     && \
-    rpm-ostree cleanup --repomd
+    rpm-ostree cleanup --repomd \
     && \    
     dnf clean all
