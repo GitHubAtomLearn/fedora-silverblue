@@ -20,7 +20,9 @@ LABEL org.opencontainers.image.licenses="MIT"
 # - Misc /var cleanup
 # - Remove SetUID/SetGID bits
 RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
-    dnf5 dnf5-plugins dnf5-plugin-automatic \
+    dnf5 \
+    dnf5-plugins \
+#    dnf5-plugin-automatic \
 #    && \
 #    dnf --version \
     && \
@@ -35,7 +37,7 @@ RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
 #        --install rpmfusion-free-release \
 #        --install rpmfusion-nonfree-release \
     && \
-    #rpm-ostree override remove noopenh264 --install mozilla-openh264 \
+#    rpm-ostree override remove noopenh264 --install mozilla-openh264 \
     dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
     && \
 #    rpm-ostree override remove nano nano-default-editor --install vim-default-editor \
