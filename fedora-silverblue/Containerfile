@@ -1,4 +1,6 @@
-FROM quay.io/fedora-ostree-desktops/silverblue:41
+#FROM quay.io/fedora-ostree-desktops/silverblue:41
+# Temporary switch to quay.io/fedora/fedora-silverblue
+FROM quay.io/fedora/fedora-silverblue:41
 
 # Keep container image for 3 weeks
 #LABEL quay.expires-after=3w
@@ -17,9 +19,16 @@ LABEL org.opencontainers.image.licenses="MIT"
 # - Enable libvirtd
 # - Misc /var cleanup
 # - Remove SetUID/SetGID bits
-RUN rpm-ostree install \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm
+RUN dnf --version \
+    rpm-ostree install --apply-live \
+    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
+    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
     && \
+    rpm-ostree update \
+        --uninstall rpmfusion-free-release \
+        --uninstall rpmfusion-nonfree-release \
+        --install rpmfusion-free-release \
+        --install rpmfusion-nonfree-release
 rpm-ostree override remove noopenh264 --install mozilla-openh264 \
     && \
     rpm-ostree override remove nano nano-default-editor --install vim-default-editor \

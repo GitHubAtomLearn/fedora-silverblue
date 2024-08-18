@@ -3,7 +3,9 @@ name: "Build Fedora SilverBlue Images"
 env:
   NAME: "fedora-silverblue"
   REGISTRY: "quay.io/operatement"
-  BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:41"
+  #BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:41"
+  # Temporary switch to quay.io/fedora/fedora-silverblue:41
+  BASEIMAGE: "quay.io/fedora/fedora-silverblue:41"
 
 on:
 
