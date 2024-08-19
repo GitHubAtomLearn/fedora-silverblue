@@ -5,8 +5,8 @@ FROM quay.io/fedora/fedora-silverblue:41
 # Keep container image for 3 weeks
 #LABEL quay.expires-after=3w
 
-LABEL org.opencontainers.image.title="Fedora SilverBlue"
-LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue"
+LABEL org.opencontainers.image.title="Fedora SilverBlue 41"
+LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue 41"
 LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
 LABEL org.opencontainers.image.licenses="MIT"
 
@@ -16,6 +16,7 @@ LABEL org.opencontainers.image.licenses="MIT"
 
 # - Install dnf5
 # - Install RPM Fusion Free and Nonfree Repositories
+# - Install NVIDIA driver
 # - Replace noopenh264 with openh264
 # - Replace nano with vim
 # - Install various packages
