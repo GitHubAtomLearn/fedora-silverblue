@@ -14,11 +14,11 @@ RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
     dnf5-plugins \
 #    dnf5-plugin-automatic \
     && \
-    dnf --assumeyes install \
+    dnf5 --assumeyes install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
     akmod-nvidia \
     && \
     rpm-ostree cleanup --repomd \
     && \    
-    dnf clean all
+    dnf5 clean all

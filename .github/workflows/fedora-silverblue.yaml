@@ -117,7 +117,7 @@ jobs:
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
 
       # SilverBlue 41 Container Image
-      - name: Push SilverBlue 41 to Container Registry
+      - name: Push SilverBlue 41 Image to Container Registry
         uses: redhat-actions/push-to-registry@v2
         id: push-41
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
@@ -140,7 +140,7 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
       # SilverBlue 40 Base Container Image
-      - name: Push SilverBlue 40 Base to Container Registry
+      - name: Push SilverBlue 40 Image to Container Registry
         uses: redhat-actions/push-to-registry@v2
         id: push-40
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
@@ -163,7 +163,7 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
       # Rawhide Base Container Image
-      - name: Push Rawhide Base to Container Registry
+      - name: Push SilverBlue Rawhide Image to Container Registry
         uses: redhat-actions/push-to-registry@v2
         id: push-rawhide
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
@@ -177,7 +177,7 @@ jobs:
             --compression-format=zstd:chunked
             --compression-level=19
 
-      - name: Sign Rawhide Base Container Image
+      - name: Sign SilverBlue Rawhide Image Container Image
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         run: |
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-rawhide.outputs.digest }}
