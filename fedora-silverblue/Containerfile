@@ -56,7 +56,6 @@ RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
         krb5-workstation \
         arm-image-installer \
         coreos-installer \
-        gnome-console \
         virt-install \
         virt-manager \
         smartmontools \

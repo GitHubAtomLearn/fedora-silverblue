@@ -36,7 +36,6 @@ RUN dnf --assumeyes install \
         krb5-workstation \
         arm-image-installer \
         coreos-installer \
-        gnome-console \
         virt-install \
         virt-manager \
         smartmontools \
