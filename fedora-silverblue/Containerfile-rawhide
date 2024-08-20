@@ -22,8 +22,8 @@ LABEL org.opencontainers.image.licenses="MIT"
 RUN dnf --assumeyes install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
-    && \
-    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
+#    && \
+#    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
     && \
     dnf swap --assumeyes --allowerasing nano vim-default-editor \
     && \
