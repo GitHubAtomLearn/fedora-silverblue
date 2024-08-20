@@ -25,7 +25,7 @@ RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
 #    dnf5-plugin-automatic \
     && \
 #    rpm-ostree install --apply-live --assumeyes --allow-inactive \
-    dnf --assumeyes install \
+    dnf5 --assumeyes install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
 #    && \
@@ -36,13 +36,13 @@ RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
 #        --install rpmfusion-nonfree-release \
     && \
 #    rpm-ostree override remove noopenh264 --install mozilla-openh264 \
-    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
+    dnf5 swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
     && \
 #    rpm-ostree override remove nano nano-default-editor --install vim-default-editor \
-    dnf swap --assumeyes --allowerasing nano vim-default-editor \
+    dnf5 swap --assumeyes --allowerasing nano vim-default-editor \
     && \
 #    rpm-ostree install \
-    dnf --assumeyes install \
+    dnf5 --assumeyes install \
         akmod-nvidia \
         bootc \
         htop \
@@ -73,4 +73,4 @@ RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
     && \
     rpm-ostree cleanup --repomd \
     && \    
-    dnf clean all
+    dnf5 clean all
