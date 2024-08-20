@@ -1,6 +1,6 @@
-#FROM quay.io/fedora-ostree-desktops/silverblue:41
+FROM quay.io/fedora-ostree-desktops/silverblue:41
 # Temporary switch to quay.io/fedora/fedora-silverblue:41
-FROM quay.io/fedora/fedora-silverblue:41
+#FROM quay.io/fedora/fedora-silverblue:41
 
 # Keep container image for 3 weeks
 #LABEL quay.expires-after=3w

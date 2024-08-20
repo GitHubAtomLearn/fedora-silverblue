@@ -80,7 +80,7 @@ jobs:
         with:
           image: ${{ env.NAME }}
           tags: '41'
-          containerfiles: ${{ env.NAME }}/Containerfile
+          containerfiles: ${{ env.NAME }}/Containerfile-41
           context: ${{ env.NAME }}
           layers: false
           oci: true
