@@ -9,12 +9,12 @@ LABEL org.opencontainers.image.title="Fedora SilverBlue 41"
 LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue 41"
 LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
 LABEL org.opencontainers.image.licenses="MIT"
+#LABEL quay.expires-after=""
 
 # Copy custom config to /usr & /etc
 #COPY usr usr
 #COPY etc etc
 
-# - Install dnf5
 # - Install RPM Fusion Free and Nonfree Repositories
 # - Install NVIDIA driver
 # - Replace noopenh264 with openh264
@@ -23,38 +23,23 @@ LABEL org.opencontainers.image.licenses="MIT"
 # - Enable libvirtd
 # - Misc /var cleanup
 # - Remove SetUID/SetGID bits
-RUN rpm-ostree install --apply-live --assumeyes --allow-inactive \
-    dnf5 \
-    dnf5-plugins \
-#    dnf5-plugin-automatic \
-    && \
-#    rpm-ostree install --apply-live --assumeyes --allow-inactive \
-    dnf --assumeyes install \
+
+RUN dnf --assumeyes install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
-#    && \
-#    rpm-ostree update \
-#        --uninstall rpmfusion-free-release \
-#        --uninstall rpmfusion-nonfree-release \
-#        --install rpmfusion-free-release \
-#        --install rpmfusion-nonfree-release \
     && \
-#    rpm-ostree override remove noopenh264 --install mozilla-openh264 \
     dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
     && \
-#    rpm-ostree override remove nano nano-default-editor --install vim-default-editor \
     dnf swap --assumeyes --allowerasing nano vim-default-editor \
     && \
-#    rpm-ostree install \
     dnf --assumeyes install \
         akmod-nvidia \
-        bootc \
         htop \
         iotop \
         netcat \
         sysprof \
-        krb5-workstation \
         arm-image-installer \
+        butane \
         coreos-installer \
         virt-install \
         virt-manager \

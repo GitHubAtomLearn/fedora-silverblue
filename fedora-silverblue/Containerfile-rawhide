@@ -9,7 +9,6 @@ LABEL org.opencontainers.image.licenses="MIT"
 #COPY usr usr
 #COPY etc etc
 
-# - Install dnf5
 # - Install RPM Fusion Free and Nonfree Repositories
 # - Install NVIDIA driver
 # - Replace noopenh264 with openh264
@@ -46,8 +45,8 @@ RUN dnf --assumeyes install \
         iotop \
         netcat \
         sysprof \
-        krb5-workstation \
         arm-image-installer \
+        butane \
         coreos-installer \
         virt-install \
         virt-manager \
@@ -66,5 +65,7 @@ RUN dnf --assumeyes install \
         /usr/bin/newgrp \
         /usr/bin/passwd \
         /usr/bin/vmware-user-suid-wrapper \
+    && \
+    rpm-ostree cleanup --repomd \
     && \    
     dnf clean all
