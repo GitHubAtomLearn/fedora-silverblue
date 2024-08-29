@@ -84,6 +84,18 @@ jobs:
           context: ${{ env.NAME }}
           layers: false
           oci: true
+          labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
+
+      - name: Build SilverBlue 41 Testing Container Image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.NAME }}
+          tags: '41-testing'
+          containerfiles: ${{ env.NAME }}/Containerfile-41-testing
+          context: ${{ env.NAME }}
+          layers: false
+          oci: true
+          labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
 #      - name: Build SilverBlue 40 Container Image
 #        uses: redhat-actions/buildah-build@v2
@@ -104,6 +116,7 @@ jobs:
           context: ${{ env.NAME }}
           layers: false
           oci: true
+          labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
       - name: Login to Container Registry
         uses: redhat-actions/podman-login@v1
@@ -135,6 +148,29 @@ jobs:
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         run: |
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-41.outputs.digest }}
+        env:
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+
+      # SilverBlue 41 Testing Container Image
+      - name: Push SilverBlue 41 Testing Image to Container Registry
+        uses: redhat-actions/push-to-registry@v2
+        id: push-41-testing
+        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        with:
+          username: ${{ secrets.BOT_USERNAME }}
+          password: ${{ secrets.BOT_SECRET }}
+          image: ${{ env.NAME }}
+          registry: ${{ env.REGISTRY }}
+          tags: '41-testing'
+          extra-args: |
+            --compression-format=zstd:chunked
+            --compression-level=19
+
+      - name: Sign SilverBlue Testing 41 Container Image
+        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        run: |
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-41-testing.outputs.digest }}
         env:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
