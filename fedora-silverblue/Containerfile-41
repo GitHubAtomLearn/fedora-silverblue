@@ -24,16 +24,16 @@ LABEL org.opencontainers.image.licenses="MIT"
 # - Misc /var cleanup
 # - Remove SetUID/SetGID bits
 
-RUN dnf --assumeyes install \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
-    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
-    && \
-    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
+#RUN dnf --assumeyes install \
+#    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
+#    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
+#    && \
+RUN dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
     && \
     dnf swap --assumeyes --allowerasing nano vim-default-editor \
     && \
     dnf --assumeyes install \
-        akmod-nvidia \
+#        akmod-nvidia \
         htop \
         iotop \
         netcat \
