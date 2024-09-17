@@ -60,6 +60,8 @@ RUN dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
     && \
     rpm-ostree cleanup --repomd \
     && \
+    dnf upgrade --assumeyes --enablerepo=updates-testing --refresh --advisory=FEDORA-2024-3945fdf385 \
+    && \
     dnf clean all
 
 # - Remove ostree-grub2, setup composefs, rebuild initramfs
