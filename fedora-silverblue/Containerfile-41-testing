@@ -3,7 +3,8 @@ FROM localhost/fedora-silverblue:41
 # - Install krb5-workstation
 # - Remove ostree-grub2, setup composefs, rebuild initramfs
 #RUN rpm-ostree --assumeyes override remove ostree-grub2 && \
-RUN dnf --assumeyes install krb5-workstation \
+RUN dnf --assumeyes upgrade --refresh --advisory=FEDORA-2024-3945fdf385 && \
+    dnf --assumeyes install krb5-workstation \
     && \
     dnf --assumeyes remove ostree-grub2 && \
     echo -e "[composefs]\nenabled=yes" >> /usr/lib/ostree/prepare-root.conf && \
