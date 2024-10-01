@@ -4,15 +4,17 @@ LABEL org.opencontainers.image.title="Fedora SilverBlue RawHide"
 LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue RawHide"
 LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
 LABEL org.opencontainers.image.licenses="MIT"
+#LABEL quay.expires-after=""
 
 # Copy custom config to /usr & /etc
-#COPY usr usr
-#COPY etc etc
+COPY usr usr
+COPY etc etc
 
 # - Install RPM Fusion Free and Nonfree Repositories
 # - Install NVIDIA driver
-# - Replace noopenh264 with openh264
 # - Replace nano with vim
+# - Remove plymouth
+# - Replace noopenh264 with openh264
 # - Install various packages
 # - Enable libvirtd
 # - Misc /var cleanup
@@ -21,23 +23,12 @@ LABEL org.opencontainers.image.licenses="MIT"
 #RUN dnf --assumeyes install \
 #    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
 #    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
-
-
-# From https://github.com/GitHubAtomLearn/fedora-silverblue/actions/runs/10466698757/job/28984020090
-# Running transaction
-# Importing PGP key 0x105EF944:
-#  Userid     : "Fedora (42) <fedora-42-primary@fedoraproject.org>"
-#  Fingerprint: B0F4950458F69E1150C6C5EDC8AC4916105EF944
-#  From       : file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-rawhide-x86_64
-# The key was successfully imported.
-# Transaction failed: Signature verification failed.
-# PGP check for package "mozilla-openh264-2.4.1-2.fc41.x86_64" (/var/cache/libdnf5/fedora-cisco-openh264-4896e02bbb10d47b/packages/mozilla-openh264-2.4.1-2.fc41.x86_64.rpm) from repo "fedora-cisco-openh264" has failed: Import of the key didn't help, wrong key?   
 #    && \
-#    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
-
-
-#    && \
-RUN dnf swap --assumeyes --allowerasing nano vim-default-editor \
+RUN dnf --assumeyes remove plymouth plymouth-core-libs plymouth-graphic-libs \
+    && \
+    dnf swap --assumeyes --allowerasing nano vim-default-editor \
+    && \
+    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
     && \
     dnf --assumeyes install \
 #        akmod-nvidia \
@@ -45,7 +36,7 @@ RUN dnf swap --assumeyes --allowerasing nano vim-default-editor \
         iotop \
         netcat \
         sysprof \
-        arm-image-installer \
+#        arm-image-installer \
         butane \
         coreos-installer \
         virt-install \
@@ -66,5 +57,7 @@ RUN dnf swap --assumeyes --allowerasing nano vim-default-editor \
         /usr/bin/vmware-user-suid-wrapper \
     && \
     rpm-ostree cleanup --repomd \
-    && \    
-    dnf clean all
+    && \
+    dnf clean all \
+    && \
+    rm --recursive --force /var/* /tmp/*
