@@ -12,13 +12,14 @@ LABEL org.opencontainers.image.licenses="MIT"
 #LABEL quay.expires-after=""
 
 # Copy custom config to /usr & /etc
-#COPY usr usr
-#COPY etc etc
+COPY usr usr
+COPY etc etc
 
 # - Install RPM Fusion Free and Nonfree Repositories
 # - Install NVIDIA driver
-# - Replace noopenh264 with openh264
 # - Replace nano with vim
+# - Remove plymouth
+# - Replace noopenh264 with openh264
 # - Install various packages
 # - Enable libvirtd
 # - Misc /var cleanup
@@ -28,9 +29,11 @@ LABEL org.opencontainers.image.licenses="MIT"
 #    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
 #    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
 #    && \
-RUN dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
+RUN dnf --assumeyes remove plymouth plymouth-core-libs plymouth-graphic-libs \
     && \
     dnf swap --assumeyes --allowerasing nano vim-default-editor \
+    && \
+    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
     && \
     dnf --assumeyes install \
 #        akmod-nvidia \
@@ -38,7 +41,7 @@ RUN dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
         iotop \
         netcat \
         sysprof \
-        arm-image-installer \
+#        arm-image-installer \
         butane \
         coreos-installer \
         virt-install \
@@ -60,21 +63,6 @@ RUN dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
     && \
     rpm-ostree cleanup --repomd \
     && \
-    dnf clean all
-
-# - Remove ostree-grub2, setup composefs, rebuild initramfs
-# - Install bootupd and generate metadata
-#RUN rpm-ostree --assumeyes override remove ostree-grub2 && \
-#RUN dnf --assumeyes remove ostree-grub2 && \
-#    echo -e "[composefs]\nenabled=yes" >> /usr/lib/ostree/prepare-root.conf && \
-#    export KERNEL_VERSION="$(rpm --query --all kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
-#    stock_arguments=$(lsinitrd "/lib/modules/${KERNEL_VERSION}/initramfs.img" | grep '^Arguments: ' | sed 's/^Arguments: //') && \
-#    mkdir --parents /tmp/dracut /var/roothome && \
-##    mkdir --parents /tmp/dracut /var/roothome /usr/lib/ostree-boot/efi/EFI && \
-#    bash <(/usr/bin/echo "dracut $stock_arguments") && \
-#    rm --recursive --force /var/* /tmp/*  && \
-#    mv --verbose /boot/initramfs*.img "/lib/modules/${KERNEL_VERSION}/initramfs.img" #\
-##    && \
-##    /usr/bin/bootupctl backend generate-update-metadata \
-##    && \
-##    rpm-ostree cleanup --repomd
+    dnf clean all \
+    && \
+    rm --recursive --force /var/* /tmp/*

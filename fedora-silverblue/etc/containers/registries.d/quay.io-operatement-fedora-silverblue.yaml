@@ -1,0 +1,3 @@
+docker:
+  quay.io/operatement/fedora-silverblue:
+    use-sigstore-attachments: true

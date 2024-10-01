@@ -1,0 +1,67 @@
+{
+    "default": [
+        {
+            "type": "reject"
+        }
+    ],
+    "transports": {
+        "docker": {
+	    "registry.access.redhat.com": [
+		{
+		    "type": "signedBy",
+		    "keyType": "GPGKeys",
+		    "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
+		}
+	    ],
+	    "registry.redhat.io": [
+		{
+		    "type": "signedBy",
+		    "keyType": "GPGKeys",
+		    "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
+		}
+	    ],
+            "quay.io/operatement/fedora-silverblue": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/quay.io-operatement-fedora-silverblue.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
+            "": [
+                {
+                    "type": "insecureAcceptAnything"
+                }
+            ]
+	},
+ 	"containers-storage": {
+	    "": [
+		{
+		    "type": "insecureAcceptAnything"
+		}
+	    ]
+	},
+       "docker-daemon": {
+	    "": [
+		{
+		    "type": "insecureAcceptAnything"
+		}
+	    ]
+	},
+        "oci": {
+            "": [
+                {
+                    "type": "insecureAcceptAnything"
+                }
+            ]
+        },
+	"oci-archive": {
+	    "": [
+		{
+		    "type": "insecureAcceptAnything"
+		}
+	    ]
+	}
+    }
+}
