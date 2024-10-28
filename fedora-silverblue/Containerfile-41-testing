@@ -9,6 +9,9 @@ LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora
 LABEL org.opencontainers.image.licenses="MIT"
 #LABEL quay.expires-after=""
 
+# Fix day/night background transition feature
+RUN sed --in-place="-ORIGINAL" 's/f40/f41/g' /usr/share/backgrounds/f41/default/f41.xml && \
+
 # - Remove ostree-grub2, setup composefs, rebuild initramfs
 #RUN rpm-ostree --assumeyes override remove ostree-grub2 && \
 
@@ -30,4 +33,4 @@ LABEL org.opencontainers.image.licenses="MIT"
 ##    /usr/bin/bootupctl backend generate-update-metadata \
 ##    && \
 ##    rpm-ostree cleanup --repomd
-#    rpm-ostree cleanup --repomd && dnf clean all && rm --recursive --force /var/* /tmp/*
+    rpm-ostree cleanup --repomd && dnf clean all && rm --recursive --force /var/* /tmp/*
