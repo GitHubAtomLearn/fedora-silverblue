@@ -10,8 +10,7 @@ LABEL org.opencontainers.image.licenses="MIT"
 #LABEL quay.expires-after=""
 
 # Fix day/night background transition feature
-#RUN sed --in-place="-ORIGINAL" 's/f40/f41/g' /usr/share/backgrounds/f41/default/f41.xml && \
-RUN dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2024-2c6a9cf88f && \
+RUN sed --in-place="-ORIGINAL" 's/.png/.webp/g' /usr/share/backgrounds/f41/default/f41.xml && \
 
 # - Remove ostree-grub2, setup composefs, rebuild initramfs
 #RUN rpm-ostree --assumeyes override remove ostree-grub2 && \
