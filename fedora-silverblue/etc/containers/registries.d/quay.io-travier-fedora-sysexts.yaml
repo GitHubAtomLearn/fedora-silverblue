@@ -1,0 +1,3 @@
+docker:
+  quay.io/travier/fedora-sysexts:
+    use-sigstore-attachments: true

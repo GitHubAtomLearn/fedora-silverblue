@@ -1,5 +1,4 @@
 FROM quay.io/fedora-ostree-desktops/silverblue:41
-# Temporary switch to quay.io/fedora/fedora-silverblue:41
 #FROM quay.io/fedora/fedora-silverblue:41
 
 # Keep container image for 3 weeks
@@ -39,17 +38,38 @@ RUN dnf --assumeyes remove plymouth plymouth-core-libs plymouth-graphic-libs \
 #        akmod-nvidia \
         htop \
         iotop \
-        netcat \
+#        netcat \
         sysprof \
-#        arm-image-installer \
-        butane \
-        coreos-installer \
-        virt-install \
-        virt-manager \
         smartmontools \
 #        krb5-workstation \
+#        arm-image-installer \
+#        butane \
+#        coreos-installer \
+        # libvirtd for Desktop
+        guestfs-tools \
+        libguestfs \
+        libguestfs-xfs \
+        libvirt-client \
+        libvirt-daemon \
+        libvirt-daemon-config-network \
+        libvirt-daemon-driver-interface \
+        libvirt-daemon-driver-network \
+        libvirt-daemon-driver-nodedev \
+        libvirt-daemon-driver-nwfilter \
+        libvirt-daemon-driver-qemu \
+        libvirt-daemon-driver-secret \
+        libvirt-daemon-driver-storage-core \
+        libvirt-dbus \
+        netcat \
+        qemu \
+        qemu-img \
+        swtpm \
+        virt-install \
+#        virt-install \
+#        virt-manager \
     && \
-    systemctl enable libvirtd.socket \
+    systemctl enable virtqemud.socket virtnetworkd.socket virtstoraged.socket \
+#    systemctl enable libvirtd.socket \
     && \
     rm --recursive --force /var/lib/unbound/root.key \
     && \
@@ -66,4 +86,6 @@ RUN dnf --assumeyes remove plymouth plymouth-core-libs plymouth-graphic-libs \
     && \
     dnf clean all \
     && \
-    rm --recursive --force /var/* /tmp/*
+    rm --recursive --force /var/* /tmp/* \
+    && \
+    bootc container lint

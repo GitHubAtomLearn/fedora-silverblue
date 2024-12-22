@@ -141,7 +141,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           tags: '41'
           extra-args: |
-            --compression-format=zstd:chunked
+            --compression-format=zstd
             --compression-level=19
 
       - name: Sign SilverBlue 41 Container Image
@@ -164,7 +164,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           tags: '41-testing'
           extra-args: |
-            --compression-format=zstd:chunked
+            --compression-format=zstd
             --compression-level=19
 
       - name: Sign SilverBlue Testing 41 Container Image
@@ -187,7 +187,7 @@ jobs:
 #          registry: ${{ env.REGISTRY }}
 #          tags: '40'
 #          extra-args: |
-#            --compression-format=zstd:chunked
+#            --compression-format=zstd
 #            --compression-level=19
 #
 #      - name: Sign SilverBlue 40 Container Image
@@ -210,7 +210,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           tags: 'rawhide'
           extra-args: |
-            --compression-format=zstd:chunked
+            --compression-format=zstd
             --compression-level=19
 
       - name: Sign SilverBlue Rawhide Container Image

@@ -29,39 +29,60 @@
                     }
                 }
             ],
-            "": [
+             "docker.io/operatement/fedora-silverblue": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/docker.io-operatement-fedora-silverblue.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
+            "quay.io/travier/fedora-sysexts": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/quay.io-travier-fedora-sysexts.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
+            "quay.io/travier/fedora-kinoite": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/quay.io-travier-fedora-kinoite.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
+           "": [
                 {
                     "type": "insecureAcceptAnything"
                 }
             ]
 	},
- 	"containers-storage": {
+        "docker-daemon": {
 	    "": [
 		{
 		    "type": "insecureAcceptAnything"
 		}
 	    ]
 	},
-       "docker-daemon": {
-	    "": [
-		{
-		    "type": "insecureAcceptAnything"
-		}
-	    ]
-	},
-        "oci": {
-            "": [
-                {
-                    "type": "insecureAcceptAnything"
-                }
-            ]
-        },
 	"oci-archive": {
 	    "": [
 		{
 		    "type": "insecureAcceptAnything"
 		}
 	    ]
+	},
+	"containers-storage": {
+	    "": [
+		{
+		    "type": "insecureAcceptAnything"
+		}
+	    ]
 	}
+
     }
 }

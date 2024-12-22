@@ -1,0 +1,80 @@
+#!/bin/bash
+# Migrate a system to use a static GRUB config
+# See: https://fedoraproject.org/wiki/Changes/ComposefsAtomicDesktops
+# See: https://gitlab.com/fedora/ostree/sig/-/issues/35
+ 
+set -euo pipefail
+ 
+main() {
+    # Used to condition execution of this unit at the systemd level
+    local -r stamp_file="/var/lib/.fedora_atomic_desktops_static_grub"
+
+    # Did we already complete the migration?
+    local -r ostree_bootloader="$(ostree config --repo=/sysroot/ostree/repo get "sysroot.bootloader" &> /dev/null || echo "false")"
+    if [[ "${ostree_bootloader}" == "none" ]]; then
+        echo "ostree repo 'sysroot.bootloader' config option already set to 'none'."
+        echo "Assuming that the migration is already complete."
+        touch "${stamp_file}"
+        exit 0
+    fi
+
+    # Remount /boot read write just for this unit (we are called in a slave
+    # mount namespace by systemd)
+    echo "Remounting /boot read write..."
+    mount -o remount,rw /boot
+
+    # If /boot/grub2 does not exists then something is wrong and we likely
+    # don't have /boot successfully mounted
+    if [[ ! -e "/boot/grub2" ]]; then
+        echo "Could not find /boot/grub2. Maybe /boot is not mounted?" 1>&2
+        echo "Not performing migration." 1>&2
+        exit 1
+    fi
+
+    # Migrate /boot/grub2/grub.cfg to a static GRUB config if it is a symlink
+    if [[ -L "/boot/grub2/grub.cfg" ]]; then
+        echo "Migrating to a static GRUB config..."
+
+        # Backup the current GRUB config which is hopefully working right now
+        if [[ ! -f "/boot/loader/grub.cfg" ]]; then
+            echo "Could not find the current GRUB config." 1>&2
+            echo "Not performing migration." 1>&2
+            exit 1
+        fi
+        echo "Creating a backup of the current GRUB config in '/boot/grub2/grub.cfg.backup'..."
+        cp --preserve=all "/boot/loader/grub.cfg" "/boot/grub2/grub.cfg.backup"
+
+        # Copy it again alongside the current symlink
+        cp --preserve=all "/boot/grub2/grub.cfg.backup" "/boot/grub2/grub.cfg.current"
+
+        # Atomically exchange the configs
+        exch "/boot/grub2/grub.cfg.current" "/boot/grub2/grub.cfg"
+
+        # Remove the now unsused symlink (optional cleanup)
+        rm --force /boot/grub2/grub.cfg.current
+
+        echo "GRUB config symlink successfully replaced with the current config."
+    fi
+
+    # If /etc/default/grub exists then we have to force the regeneration of the
+    # GRUB config to remove the ostree entries that duplicates the BLS ones
+    if [[ -f "/etc/default/grub" ]]; then
+        echo "Regenerating a pure BLS GRUB config..."
+	    grub2-mkconfig -o /boot/grub2/grub.cfg
+    fi
+
+    # Remount /sysroot read write just for this unit (we are called in a slave
+    # mount namespace by systemd)
+    echo "Remounting /sysroot read write..."
+    mount -o remount,rw /sysroot
+
+    echo "Setting up 'sysroot.bootloader' to 'none' in ostree repo config..."
+	ostree config set sysroot.bootloader none
+
+    # Migration complete, let's write the stamp file
+    touch "${stamp_file}"
+    echo "Static GRUB config migration completed successfully!"
+    exit 0
+}
+ 
+main "${@}"

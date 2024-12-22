@@ -1,0 +1,18 @@
+[Unit]
+Description=Static GRUB config migration for Fedora Atomic Desktops
+Documentation=https://fedoraproject.org/wiki/Changes/ComposefsAtomicDesktops
+ConditionPathExists=!/var/lib/.fedora_atomic_desktops_static_grub
+RequiresMountsFor=/sysroot /boot
+# Run after the bootloader update
+After=bootloader-update.service
+Requires=bootloader-update.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/fedora-atomic-desktops-static-grub-migration
+RemainAfterExit=yes
+# MountFlags=slave is so the read write remount of /boot will only be visible to this unit
+MountFlags=slave
+
+[Install]
+WantedBy=multi-user.target

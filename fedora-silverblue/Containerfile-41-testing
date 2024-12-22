@@ -10,14 +10,20 @@ LABEL org.opencontainers.image.licenses="MIT"
 #LABEL quay.expires-after=""
 
 # Fix day/night background transition feature
-RUN sed --in-place="-ORIGINAL" 's/.png/.webp/g' /usr/share/backgrounds/f41/default/f41.xml && \
-    mkdir --parents /etc/backgrounds/f41/default && \
-    mv /usr/share/backgrounds/f41/default/f41.xml /etc/backgrounds/f41/default && \
-    ln --symbolic /etc/backgrounds/f41/default/f41.xml /usr/share/backgrounds/f41/default
+#RUN sed --in-place="-ORIGINAL" 's/.png/.webp/g' /usr/share/backgrounds/f41/default/f41.xml && \
+#    mkdir --parents /etc/backgrounds/f41/default && \
+#    mv /usr/share/backgrounds/f41/default/f41.xml /etc/backgrounds/f41/default && \
+#    ln --symbolic /etc/backgrounds/f41/default/f41.xml /usr/share/backgrounds/f41/default
 
-#RUN rpm-ostree override replace https://bodhi.fedoraproject.org/updates/FEDORA-2024-7bb17ff603 && \
+RUN sed --in-place="-ORIGINAL" 's,<filename>/usr/share/backgrounds/f41/default/f41.xml</filename>,<filename>/etc/backgrounds/f41/default/f41.xml</filename>,' /usr/share/gnome-background-properties/f41.xml && \
 
-RUN dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2024-54d50c12c0 && \
+#COPY --chmod=644 usr/lib/systemd/system/fedora-atomic-desktops-static-grub-migration.service usr/lib/systemd/system/fedora-atomic-desktops-static-grub-migration.service
+#COPY --chmod=755 usr/libexec/fedora-atomic-desktops-static-grub-migration usr/libexec/fedora-atomic-desktops-static-grub-migration
+#RUN systemctl enable fedora-atomic-desktops-static-grub-migration.service
+
+#RUN rpm-ostree override replace https://bodhi.fedoraproject.org/updates/FEDORA-2024-54d50c12c0 && \
+
+    dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2024-e7abdb1f24 && \
 
 # - Remove ostree-grub2, setup composefs, rebuild initramfs
 #    dnf --assumeyes remove ostree-grub2 && \
