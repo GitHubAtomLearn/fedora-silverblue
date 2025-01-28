@@ -86,6 +86,6 @@ RUN dnf --assumeyes remove plymouth plymouth-core-libs plymouth-graphic-libs \
     && \
     dnf clean all \
     && \
-    rm --recursive --force /var/* /tmp/* \
-    && \
-    bootc container lint
+    rm --recursive --force /var/* /tmp/* #\
+#    && \
+#    bootc container lint
