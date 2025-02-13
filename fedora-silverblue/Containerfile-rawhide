@@ -31,8 +31,13 @@ COPY etc etc
 RUN dnf --assumeyes remove plymouth plymouth-core-libs plymouth-graphic-libs \
     && \
     dnf swap --assumeyes --allowerasing nano vim-default-editor \
-    && \
-    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
+
+    # OpenPGP check for package "mozilla-openh264-2.4.1-2.fc42.x86_64" 
+    # (/var/cache/libdnf5/fedora-cisco-openh264-4896e02bbb10d47b/packages/mozilla-openh264-2.4.1-2.fc42.x86_64.rpm) 
+    # from repo "fedora-cisco-openh264" has failed: Public key is not installed.
+#    && \
+#    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
+
     && \
     dnf --assumeyes install \
 #        akmod-nvidia \
