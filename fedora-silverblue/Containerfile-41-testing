@@ -15,7 +15,7 @@ LABEL org.opencontainers.image.licenses="MIT"
 #    mv /usr/share/backgrounds/f41/default/f41.xml /etc/backgrounds/f41/default && \
 #    ln --symbolic /etc/backgrounds/f41/default/f41.xml /usr/share/backgrounds/f41/default
 
-RUN sed --in-place="-ORIGINAL" 's,<filename>/usr/share/backgrounds/f41/default/f41.xml</filename>,<filename>/etc/backgrounds/f41/default/f41.xml</filename>,' /usr/share/gnome-background-properties/f41.xml && \
+#RUN sed --in-place="-ORIGINAL" 's,<filename>/usr/share/backgrounds/f41/default/f41.xml</filename>,<filename>/etc/backgrounds/f41/default/f41.xml</filename>,' /usr/share/gnome-background-properties/f41.xml && \
 
 #COPY --chmod=644 usr/lib/systemd/system/fedora-atomic-desktops-static-grub-migration.service usr/lib/systemd/system/fedora-atomic-desktops-static-grub-migration.service
 #COPY --chmod=755 usr/libexec/fedora-atomic-desktops-static-grub-migration usr/libexec/fedora-atomic-desktops-static-grub-migration
@@ -23,21 +23,7 @@ RUN sed --in-place="-ORIGINAL" 's,<filename>/usr/share/backgrounds/f41/default/f
 
 #RUN rpm-ostree override replace https://bodhi.fedoraproject.org/updates/FEDORA-2024-54d50c12c0 && \
 
-    # This update has been unpushed. See https://bodhi.fedoraproject.org/updates/FEDORA-2024-e7abdb1f24
-#    dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2024-e7abdb1f24 && \
+    # This update has been unpushed. See ...
+RUN dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2025-3dfc505946 && \
 
-# - Remove ostree-grub2, setup composefs, rebuild initramfs
-#    dnf --assumeyes remove ostree-grub2 && \
-#    echo -e "[composefs]\nenabled=yes" >> /usr/lib/ostree/prepare-root.conf && \
-#    export KERNEL_VERSION="$(rpm --query --all kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
-#    stock_arguments=$(lsinitrd "/lib/modules/${KERNEL_VERSION}/initramfs.img" | grep '^Arguments: ' | sed 's/^Arguments: //') && \
-#    mkdir --parents /tmp/dracut /var/roothome && \
-##    mkdir --parents /tmp/dracut /var/roothome /usr/lib/ostree-boot/efi/EFI && \
-#    bash <(/usr/bin/echo "dracut $stock_arguments") && \
-#    rm --recursive --force /var/* /tmp/*  && \
-#    mv --verbose /boot/initramfs*.img "/lib/modules/${KERNEL_VERSION}/initramfs.img" #\
-##    && \
-##    /usr/bin/bootupctl backend generate-update-metadata \
-##    && \
-##    rpm-ostree cleanup --repomd
     rpm-ostree cleanup --repomd && dnf clean all && rm --recursive --force /var/* /tmp/*
