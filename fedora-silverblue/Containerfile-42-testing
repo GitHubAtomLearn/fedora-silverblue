@@ -24,6 +24,6 @@ RUN mkdir --parents /etc/backgrounds/f42/default && \
 #RUN rpm-ostree override replace https://bodhi.fedoraproject.org/updates/FEDORA-2024-54d50c12c0 && \
 
     # This update has been unpushed. See ...
-#RUN dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2025-3dfc505946 && \
+    dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2025-1654b3366e && \
 
     rpm-ostree cleanup --repomd && dnf clean all && rm --recursive --force /var/* /tmp/*
