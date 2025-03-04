@@ -70,6 +70,7 @@ RUN dnf --assumeyes remove plymouth plymouth-core-libs plymouth-graphic-libs \
 #        virt-manager \
     && \
     systemctl enable virtqemud.socket virtnetworkd.socket virtstoraged.socket \
+    rm-mount-for-root-from-etc-fstab.service \
 #    systemctl enable libvirtd.socket \
     && \
     rm --recursive --force /var/lib/unbound/root.key \

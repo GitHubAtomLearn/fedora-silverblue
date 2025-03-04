@@ -41,6 +41,8 @@ RUN dnf --assumeyes remove plymouth plymouth-core-libs plymouth-graphic-libs \
     && \
     dnf --assumeyes install \
 #        akmod-nvidia \
+        atop \
+        btop \
         htop \
         iotop \
 #        netcat \

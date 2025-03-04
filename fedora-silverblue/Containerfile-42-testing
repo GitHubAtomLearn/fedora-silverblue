@@ -1,21 +1,21 @@
-FROM localhost/fedora-silverblue:41
+FROM localhost/fedora-silverblue:42
 
 # Keep container image for 3 weeks
 #LABEL quay.expires-after=3w
 
-LABEL org.opencontainers.image.title="Fedora SilverBlue 41 Testing"
-LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue 41"
+LABEL org.opencontainers.image.title="Fedora SilverBlue 42 Testing"
+LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue 42"
 LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
 LABEL org.opencontainers.image.licenses="MIT"
 #LABEL quay.expires-after=""
 
 # Fix day/night background transition feature
-#RUN sed --in-place="-ORIGINAL" 's/.png/.webp/g' /usr/share/backgrounds/f41/default/f41.xml && \
-#    mkdir --parents /etc/backgrounds/f41/default && \
-#    mv /usr/share/backgrounds/f41/default/f41.xml /etc/backgrounds/f41/default && \
-#    ln --symbolic /etc/backgrounds/f41/default/f41.xml /usr/share/backgrounds/f41/default
+#RUN sed --in-place="-ORIGINAL" 's/.png/.webp/g' /usr/share/backgrounds/f42/default/f42.xml && \
+RUN mkdir --parents /etc/backgrounds/f42/default && \
+    mv /usr/share/backgrounds/f42/default/f42.xml /etc/backgrounds/f42/default && \
+    ln --symbolic /etc/backgrounds/f42/default/f42.xml /usr/share/backgrounds/f42/default && \
 
-#RUN sed --in-place="-ORIGINAL" 's,<filename>/usr/share/backgrounds/f41/default/f41.xml</filename>,<filename>/etc/backgrounds/f41/default/f41.xml</filename>,' /usr/share/gnome-background-properties/f41.xml && \
+#RUN sed --in-place="-ORIGINAL" 's,<filename>/usr/share/backgrounds/f42/default/f42.xml</filename>,<filename>/etc/backgrounds/f42/default/f42.xml</filename>,' /usr/share/gnome-background-properties/f42.xml && \
 
 #COPY --chmod=644 usr/lib/systemd/system/fedora-atomic-desktops-static-grub-migration.service usr/lib/systemd/system/fedora-atomic-desktops-static-grub-migration.service
 #COPY --chmod=755 usr/libexec/fedora-atomic-desktops-static-grub-migration usr/libexec/fedora-atomic-desktops-static-grub-migration
@@ -24,6 +24,6 @@ LABEL org.opencontainers.image.licenses="MIT"
 #RUN rpm-ostree override replace https://bodhi.fedoraproject.org/updates/FEDORA-2024-54d50c12c0 && \
 
     # This update has been unpushed. See ...
-RUN dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2025-3dfc505946 && \
+#RUN dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2025-3dfc505946 && \
 
     rpm-ostree cleanup --repomd && dnf clean all && rm --recursive --force /var/* /tmp/*

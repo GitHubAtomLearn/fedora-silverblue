@@ -1,0 +1,14 @@
+[Unit]
+Description=Remove mount options for / (root) from /etc/fstab
+#Documentation=
+ConditionPathExists=!/var/lib/.rm_mount_for_root
+# Run arter the systemd-remount-fs.service
+#After=systemd-remount-fs.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/rm-mount-for-root-from-etc-fstab.bash
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
