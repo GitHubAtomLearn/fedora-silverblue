@@ -48,13 +48,20 @@ jobs:
   build-push-image:
     runs-on: ubuntu-24.04
     steps:
+      - name: Reclaim disk space
+        run: |
+          set -xeuo pipefail
+          rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          echo "Available disk storage:"
+          df -h
+          
       - name: Checkout Repo
         uses: actions/checkout@v4
 
       - name: Figure out version
         id: version
         run: |
-          set -exo pipefail
+          set -xexo pipefail
           if [[ -n ${VERSION} ]]; then
             version="${VERSION}"
           else
@@ -75,16 +82,16 @@ jobs:
         env:
           VERSION: ${{ inputs.version }}
 
-      - name: Build SilverBlue 41 Container Image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: ${{ env.NAME }}
-          tags: '41'
-          containerfiles: ${{ env.NAME }}/Containerfile-41
-          context: ${{ env.NAME }}
-          layers: false
-          oci: true
-          labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
+      # - name: Build SilverBlue 41 Container Image
+        # uses: redhat-actions/buildah-build@v2
+        # with:
+          # image: ${{ env.NAME }}
+          # tags: '41'
+          # containerfiles: ${{ env.NAME }}/Containerfile-41
+          # context: ${{ env.NAME }}
+          # layers: false
+          # oci: true
+          # labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
       - name: Build SilverBlue 42 Container Image
         uses: redhat-actions/buildah-build@v2
@@ -97,16 +104,16 @@ jobs:
           oci: true
           labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
-      - name: Build SilverBlue 42 Testing Container Image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: ${{ env.NAME }}
-          tags: '42-testing'
-          containerfiles: ${{ env.NAME }}/Containerfile-42-testing
-          context: ${{ env.NAME }}
-          layers: false
-          oci: true
-          labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
+      # - name: Build SilverBlue 42 Testing Container Image
+        # uses: redhat-actions/buildah-build@v2
+        # with:
+          # image: ${{ env.NAME }}
+          # tags: '42-testing'
+          # containerfiles: ${{ env.NAME }}/Containerfile-42-testing
+          # context: ${{ env.NAME }}
+          # layers: false
+          # oci: true
+          # labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
       - name: Build SilverBlue RawHide Container Image
         uses: redhat-actions/buildah-build@v2
@@ -131,27 +138,27 @@ jobs:
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
 
       # SilverBlue 41 Container Image
-      - name: Push SilverBlue 41 Image to Container Registry
-        uses: redhat-actions/push-to-registry@v2
-        id: push-41
-        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        with:
-          username: ${{ secrets.BOT_USERNAME }}
-          password: ${{ secrets.BOT_SECRET }}
-          image: ${{ env.NAME }}
-          registry: ${{ env.REGISTRY }}
-          tags: '41'
-          extra-args: |
-            --compression-format=zstd
-            --compression-level=19
+      # - name: Push SilverBlue 41 Image to Container Registry
+        # uses: redhat-actions/push-to-registry@v2
+        # id: push-41
+        # if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        # with:
+          # username: ${{ secrets.BOT_USERNAME }}
+          # password: ${{ secrets.BOT_SECRET }}
+          # image: ${{ env.NAME }}
+          # registry: ${{ env.REGISTRY }}
+          # tags: '41'
+          # extra-args: |
+            # --compression-format=zstd
+            # --compression-level=19
 
-      - name: Sign SilverBlue 41 Container Image
-        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        run: |
-          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-41.outputs.digest }}
-        env:
-          COSIGN_EXPERIMENTAL: false
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+      # - name: Sign SilverBlue 41 Container Image
+        # if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        # run: |
+          # cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-41.outputs.digest }}
+        # env:
+          # COSIGN_EXPERIMENTAL: false
+          # COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
       # SilverBlue 42 Container Image
       - name: Push SilverBlue 42 Image to Container Registry
@@ -177,27 +184,27 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
       # SilverBlue 42 Testing Container Image
-      - name: Push SilverBlue 42 Testing Image to Container Registry
-        uses: redhat-actions/push-to-registry@v2
-        id: push-42-testing
-        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        with:
-          username: ${{ secrets.BOT_USERNAME }}
-          password: ${{ secrets.BOT_SECRET }}
-          image: ${{ env.NAME }}
-          registry: ${{ env.REGISTRY }}
-          tags: '42-testing'
-          extra-args: |
-            --compression-format=zstd
-            --compression-level=19
+      # - name: Push SilverBlue 42 Testing Image to Container Registry
+        # uses: redhat-actions/push-to-registry@v2
+        # id: push-42-testing
+        # if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        # with:
+          # username: ${{ secrets.BOT_USERNAME }}
+          # password: ${{ secrets.BOT_SECRET }}
+          # image: ${{ env.NAME }}
+          # registry: ${{ env.REGISTRY }}
+          # tags: '42-testing'
+          # extra-args: |
+            # --compression-format=zstd
+            # --compression-level=19
 
-      - name: Sign SilverBlue Testing 42 Container Image
-        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        run: |
-          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-42-testing.outputs.digest }}
-        env:
-          COSIGN_EXPERIMENTAL: false
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+      # - name: Sign SilverBlue Testing 42 Container Image
+        # if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        # run: |
+          # cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push-42-testing.outputs.digest }}
+        # env:
+          # COSIGN_EXPERIMENTAL: false
+          # COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
       # Rawhide Container Image
       - name: Push SilverBlue Rawhide Image to Container Registry

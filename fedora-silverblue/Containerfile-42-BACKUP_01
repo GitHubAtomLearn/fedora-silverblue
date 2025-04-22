@@ -1,0 +1,96 @@
+FROM quay.io/fedora-ostree-desktops/silverblue:42
+#FROM quay.io/fedora/fedora-silverblue:42
+
+# Keep container image for 3 weeks
+#LABEL quay.expires-after=3w
+
+LABEL org.opencontainers.image.title="Fedora SilverBlue 42"
+LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue 42"
+LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
+LABEL org.opencontainers.image.licenses="MIT"
+#LABEL quay.expires-after=""
+
+# Copy custom config to /usr & /etc
+COPY usr usr
+COPY etc etc
+
+# - Install RPM Fusion Free and Nonfree Repositories
+# - Install NVIDIA driver
+# - Replace nano with vim
+# - Remove plymouth
+# - Replace noopenh264 with openh264
+# - Install various packages
+# - Enable libvirtd
+# - Remove SetUID/SetGID bits
+# - Cleanup
+
+#RUN dnf --assumeyes install \
+#    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
+#    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
+#    && \
+RUN dnf --assumeyes remove plymouth plymouth-core-libs plymouth-graphic-libs \
+    && \
+    dnf swap --assumeyes --allowerasing nano vim-default-editor \
+    && \
+    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
+    && \
+    dnf --assumeyes install \
+#        akmod-nvidia \
+        atop \
+        btop \
+        htop \
+        iotop \
+        gcc \
+        python3-devel \
+#        netcat \
+        sysprof \
+        smartmontools \
+#        krb5-workstation \
+#        arm-image-installer \
+#        butane \
+#        coreos-installer \
+        # libvirtd for Desktop
+        guestfs-tools \
+        libguestfs \
+        libguestfs-xfs \
+        libvirt-devel \
+        libvirt-client \
+        libvirt-daemon \
+        libvirt-daemon-config-network \
+        libvirt-daemon-driver-interface \
+        libvirt-daemon-driver-network \
+        libvirt-daemon-driver-nodedev \
+        libvirt-daemon-driver-nwfilter \
+        libvirt-daemon-driver-qemu \
+        libvirt-daemon-driver-secret \
+        libvirt-daemon-driver-storage-core \
+        libvirt-dbus \
+        netcat \
+        qemu \
+        qemu-img \
+        swtpm \
+        virt-install \
+#        virt-manager \
+    && \
+    systemctl enable virtqemud.socket virtnetworkd.socket virtstoraged.socket \
+    rm-mount-for-root-from-etc-fstab.service \
+#    systemctl enable libvirtd.socket \
+    && \
+    rm --recursive --force /var/lib/unbound/root.key \
+    && \
+    chmod ug-s \
+        /usr/bin/chage \
+        /usr/bin/chfn \
+        /usr/bin/chsh \
+        /usr/bin/gpasswd \
+        /usr/bin/newgrp \
+        /usr/bin/passwd \
+        /usr/bin/vmware-user-suid-wrapper \
+    && \
+    rpm-ostree cleanup --repomd \
+    && \
+    dnf clean all \
+    && \
+    rm --recursive --force /var/* /tmp/* \
+    && \
+    bootc container lint

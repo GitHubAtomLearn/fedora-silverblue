@@ -11,9 +11,11 @@ LABEL org.opencontainers.image.licenses="MIT"
 
 # Fix day/night background transition feature
 #RUN sed --in-place="-ORIGINAL" 's/.png/.webp/g' /usr/share/backgrounds/f42/default/f42.xml && \
-RUN mkdir --parents /etc/backgrounds/f42/default && \
-    mv /usr/share/backgrounds/f42/default/f42.xml /etc/backgrounds/f42/default && \
-    ln --symbolic /etc/backgrounds/f42/default/f42.xml /usr/share/backgrounds/f42/default && \
+RUN <<EORUN
+    set -xeuo pipefail
+    mkdir --parents /etc/backgrounds/f42/default
+    mv /usr/share/backgrounds/f42/default/f42.xml /etc/backgrounds/f42/default
+    ln --symbolic /etc/backgrounds/f42/default/f42.xml /usr/share/backgrounds/f42/default
 
 #RUN sed --in-place="-ORIGINAL" 's,<filename>/usr/share/backgrounds/f42/default/f42.xml</filename>,<filename>/etc/backgrounds/f42/default/f42.xml</filename>,' /usr/share/gnome-background-properties/f42.xml && \
 
@@ -24,6 +26,10 @@ RUN mkdir --parents /etc/backgrounds/f42/default && \
 #RUN rpm-ostree override replace https://bodhi.fedoraproject.org/updates/FEDORA-2024-54d50c12c0 && \
 
     # This update has been unpushed. See ...
-    dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2025-1654b3366e && \
+    dnf --assumeyes upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2025-d9291ca2c7
 
-    rpm-ostree cleanup --repomd && dnf clean all && rm --recursive --force /var/* /tmp/*
+    rpm-ostree cleanup --repomd
+    dnf clean all
+    rm --recursive --force /var/* /tmp/*
+    bootc container lint
+EORUN

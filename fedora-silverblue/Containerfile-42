@@ -13,6 +13,9 @@ LABEL org.opencontainers.image.licenses="MIT"
 # Copy custom config to /usr & /etc
 COPY usr usr
 COPY etc etc
+COPY install.sh /tmp
+COPY packages.txt /tmp
+COPY install_vscodium.sh /tmp
 
 # - Install RPM Fusion Free and Nonfree Repositories
 # - Install NVIDIA driver
@@ -24,70 +27,17 @@ COPY etc etc
 # - Remove SetUID/SetGID bits
 # - Cleanup
 
-#RUN dnf --assumeyes install \
-#    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm \
-#    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm \
-#    && \
-RUN dnf --assumeyes remove plymouth plymouth-core-libs plymouth-graphic-libs \
-    && \
-    dnf swap --assumeyes --allowerasing nano vim-default-editor \
-    && \
-    dnf swap --assumeyes --allowerasing noopenh264 mozilla-openh264 \
-    && \
-    dnf --assumeyes install \
-#        akmod-nvidia \
-        atop \
-        btop \
-        htop \
-        iotop \
-#        netcat \
-        sysprof \
-        smartmontools \
-#        krb5-workstation \
-#        arm-image-installer \
-#        butane \
-#        coreos-installer \
-        # libvirtd for Desktop
-        guestfs-tools \
-        libguestfs \
-        libguestfs-xfs \
-        libvirt-client \
-        libvirt-daemon \
-        libvirt-daemon-config-network \
-        libvirt-daemon-driver-interface \
-        libvirt-daemon-driver-network \
-        libvirt-daemon-driver-nodedev \
-        libvirt-daemon-driver-nwfilter \
-        libvirt-daemon-driver-qemu \
-        libvirt-daemon-driver-secret \
-        libvirt-daemon-driver-storage-core \
-        libvirt-dbus \
-        netcat \
-        qemu \
-        qemu-img \
-        swtpm \
-        virt-install \
-#        virt-manager \
-    && \
-    systemctl enable virtqemud.socket virtnetworkd.socket virtstoraged.socket \
-    rm-mount-for-root-from-etc-fstab.service \
-#    systemctl enable libvirtd.socket \
-    && \
-    rm --recursive --force /var/lib/unbound/root.key \
-    && \
-    chmod ug-s \
-        /usr/bin/chage \
-        /usr/bin/chfn \
-        /usr/bin/chsh \
-        /usr/bin/gpasswd \
-        /usr/bin/newgrp \
-        /usr/bin/passwd \
-        /usr/bin/vmware-user-suid-wrapper \
-    && \
-    rpm-ostree cleanup --repomd \
-    && \
-    dnf clean all \
-    && \
-    rm --recursive --force /var/* /tmp/* \
-    && \
+RUN <<EORUN
+    set -xeuo pipefail
+    mkdir --parents /etc/backgrounds/f42/default
+    mv /usr/share/backgrounds/f42/default/f42.xml /etc/backgrounds/f42/default
+    ln --symbolic /etc/backgrounds/f42/default/f42.xml /usr/share/backgrounds/f42/default
+
+    /tmp/install.sh
+    /tmp/install_vscodium.sh
+
+    rpm-ostree cleanup --repomd
+    dnf clean all
+    rm --recursive --force /var/* /tmp/*
     bootc container lint
+EORUN
