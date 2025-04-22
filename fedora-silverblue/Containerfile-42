@@ -28,7 +28,7 @@ COPY install_vscodium.sh /tmp
 # - Cleanup
 
 RUN <<EORUN
-    # set -xeuo pipefail
+    set -xeuo pipefail
     mkdir --parents /etc/backgrounds/f42/default
     mv /usr/share/backgrounds/f42/default/f42.xml /etc/backgrounds/f42/default
     ln --symbolic /etc/backgrounds/f42/default/f42.xml /usr/share/backgrounds/f42/default
