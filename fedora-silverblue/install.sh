@@ -2,7 +2,7 @@
 
 # set -euo pipefail
 # set -x
-set -xeuo pipefail
+# set -xeuo pipefail
 
 main() {
 

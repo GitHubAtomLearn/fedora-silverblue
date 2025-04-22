@@ -51,7 +51,7 @@ jobs:
       - name: Reclaim disk space
         run: |
           set -xeuo pipefail
-          rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
           echo "Available disk storage:"
           df -h
           
