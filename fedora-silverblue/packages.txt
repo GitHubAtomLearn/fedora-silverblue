@@ -1,25 +1,9 @@
 # These packages will be installed in the container image.
 
-# https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm --eval %fedora).noarch.rpm
-# https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm --eval %fedora).noarch.rpm
-# akmod-nvidia
-
-atop
-btop
-htop
-iotop
-gcc
-python3-devel
-
 # netcat
 
 sysprof
 smartmontools
-
-# krb5-workstation
-# arm-image-installer
-# butane
-# coreos-installer
 
 # libvirtd for Desktop
 guestfs-tools
