@@ -14,15 +14,15 @@ main() {
     dnf install -y https://kojipkgs.fedoraproject.org//packages/rpm-ostree/2025.7/3.fc42/x86_64/rpm-ostree-2025.7-3.fc42.x86_64.rpm \
         https://kojipkgs.fedoraproject.org//packages/rpm-ostree/2025.7/3.fc42/x86_64/rpm-ostree-libs-2025.7-3.fc42.x86_64.rpm
 
-    dnf -y remove plymouth plymouth-core-libs plymouth-graphic-libs
     dnf swap -y --allowerasing nano vim-default-editor
     dnf swap -y --allowerasing noopenh264 mozilla-openh264
 
-    dnf -y install $(grep -Ev '^#|^$' /tmp/packages.txt)
+    dnf -y remove $(grep -Ev '^#|^$' /tmp/remove_fedora_packages.txt)
+    # dnf -y install $(grep -Ev '^#|^$' /tmp/install_fedora_packages.txt)
 
-    systemctl enable virtqemud.socket virtnetworkd.socket virtstoraged.socket \
-    rm-mount-for-root-from-etc-fstab.service
-#    systemctl enable libvirtd.socket
+    # systemctl enable libvirtd.socket
+    # systemctl enable virtqemud.socket virtnetworkd.socket virtstoraged.socket \
+    systemctl enable rm-mount-for-root-from-etc-fstab.service
 
     rm -rf /var/lib/unbound/root.key
     chmod ug-s \

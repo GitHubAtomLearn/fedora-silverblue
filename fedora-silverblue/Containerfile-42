@@ -13,8 +13,9 @@ LABEL org.opencontainers.image.licenses="MIT"
 # Copy custom config to /usr & /etc
 COPY usr usr
 COPY etc etc
-COPY install.sh /tmp
-COPY packages.txt /tmp
+COPY fedora_packages.sh /tmp
+COPY remove_fedora_packages.txt /tmp
+# COPY install_fedora_packages.txt /tmp
 COPY install_vscodium.sh /tmp
 
 # - Install RPM Fusion Free and Nonfree Repositories
@@ -22,7 +23,7 @@ COPY install_vscodium.sh /tmp
 # - Replace nano with vim
 # - Remove plymouth
 # - Replace noopenh264 with openh264
-# - Install various packages
+# - Remove and Install various packages
 # - Enable libvirtd
 # - Remove SetUID/SetGID bits
 # - Cleanup
@@ -33,7 +34,7 @@ RUN <<EORUN
     mv /usr/share/backgrounds/f42/default/f42.xml /etc/backgrounds/f42/default
     ln --symbolic /etc/backgrounds/f42/default/f42.xml /usr/share/backgrounds/f42/default
 
-    /tmp/install.sh
+    /tmp/fedora_packages.sh
     /tmp/install_vscodium.sh
 
     rpm-ostree cleanup --repomd

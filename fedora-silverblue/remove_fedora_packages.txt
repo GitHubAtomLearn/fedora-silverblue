@@ -1,0 +1,11 @@
+# These packages will be removed from the container image.
+
+plymouth
+plymouth-core-libs
+plymouth-graphic-libs
+yelp
+gnome-tour
+malcontent
+malcontent-control
+malcontent-libs
+malcontent-ui-libs
