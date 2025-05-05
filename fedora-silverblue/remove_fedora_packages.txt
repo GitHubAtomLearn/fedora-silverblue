@@ -3,9 +3,15 @@
 plymouth
 plymouth-core-libs
 plymouth-graphic-libs
+plymouth-graphics-libs
+plymouth-plugin-label
+plymouth-plugin-two-step
+plymouth-scripts
+plymouth-system-theme
+plymouth-theme-spinner
 yelp
 gnome-tour
-malcontent
-malcontent-control
-malcontent-libs
-malcontent-ui-libs
+# malcontent
+# malcontent-control
+# malcontent-libs
+# malcontent-ui-libs

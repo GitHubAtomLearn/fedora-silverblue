@@ -17,7 +17,20 @@ main() {
     dnf swap -y --allowerasing nano vim-default-editor
     dnf swap -y --allowerasing noopenh264 mozilla-openh264
 
+    # dnf -y remove --no-autoremove --noautoremove $(grep -Ev '^#|^$' /tmp/remove_fedora_packages.txt)
     dnf -y remove $(grep -Ev '^#|^$' /tmp/remove_fedora_packages.txt)
+    # dnf -y remove --no-autoremove --noautoremove plymouth
+    # dnf -y remove --no-autoremove --noautoremove yelp
+    # dnf -y remove --no-autoremove --noautoremove gnome-tour
+    # dnf -y remove --no-autoremove --noautoremove malcontent
+    # rpm --erase --nodeps $(grep -Ev '^#|^$' /tmp/remove_fedora_packages.txt)
+    # rpm -qa | grep malcontent
+    rpm --erase --nodeps malcontent
+    rpm --erase --nodeps malcontent-control
+    rpm --erase --nodeps malcontent-ui-libs
+    # rpm --erase --nodeps malcontent-libs
+    # rpm -qa | grep malcontent
+
     # dnf -y install $(grep -Ev '^#|^$' /tmp/install_fedora_packages.txt)
 
     # systemctl enable libvirtd.socket
