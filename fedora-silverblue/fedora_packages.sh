@@ -9,10 +9,10 @@ main() {
     # https://www.mankier.com/1/gpg#Files-GNUPGHOME
     export GNUPGHOME="/tmp/.gnupg"
 
-    # dnf -y upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2025-96e470a839
+    dnf -y upgrade --enablerepo=updates-testing --refresh --advisory=FEDORA-2025-01e5d62106
     
-    dnf install -y https://kojipkgs.fedoraproject.org//packages/rpm-ostree/2025.7/3.fc42/x86_64/rpm-ostree-2025.7-3.fc42.x86_64.rpm \
-        https://kojipkgs.fedoraproject.org//packages/rpm-ostree/2025.7/3.fc42/x86_64/rpm-ostree-libs-2025.7-3.fc42.x86_64.rpm
+    # dnf install -y https://kojipkgs.fedoraproject.org//packages/rpm-ostree/2025.7/3.fc42/x86_64/rpm-ostree-2025.7-3.fc42.x86_64.rpm \
+    #     https://kojipkgs.fedoraproject.org//packages/rpm-ostree/2025.7/3.fc42/x86_64/rpm-ostree-libs-2025.7-3.fc42.x86_64.rpm
 
     dnf swap -y --allowerasing nano vim-default-editor
     dnf swap -y --allowerasing noopenh264 mozilla-openh264
