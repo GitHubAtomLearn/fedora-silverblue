@@ -31,11 +31,12 @@ main() {
     # rpm --erase --nodeps malcontent-libs
     # rpm -qa | grep malcontent
 
-    # dnf -y install $(grep -Ev '^#|^$' /tmp/install_fedora_packages.txt)
+    dnf -y install $(grep -Ev '^#|^$' /tmp/install_fedora_packages.txt)
 
     # systemctl enable libvirtd.socket
-    # systemctl enable virtqemud.socket virtnetworkd.socket virtstoraged.socket \
-    systemctl enable rm-mount-for-root-from-etc-fstab.service
+    systemctl enable virtqemud.socket virtnetworkd.socket virtstoraged.socket \
+    rm-mount-for-root-from-etc-fstab.service
+    # systemctl enable rm-mount-for-root-from-etc-fstab.service
 
     rm -rf /var/lib/unbound/root.key
     chmod ug-s \

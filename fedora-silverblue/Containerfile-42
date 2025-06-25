@@ -15,7 +15,7 @@ COPY usr usr
 COPY etc etc
 COPY fedora_packages.sh /tmp
 COPY remove_fedora_packages.txt /tmp
-# COPY install_fedora_packages.txt /tmp
+COPY install_fedora_packages.txt /tmp
 COPY install_vscodium.sh /tmp
 
 # - Install RPM Fusion Free and Nonfree Repositories
