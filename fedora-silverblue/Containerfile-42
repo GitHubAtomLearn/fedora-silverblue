@@ -40,5 +40,5 @@ RUN <<EORUN
     rpm-ostree cleanup --repomd
     dnf clean all
     rm --recursive --force /var/* /tmp/*
-    bootc container lint
+    bootc container lint --no-truncate
 EORUN
