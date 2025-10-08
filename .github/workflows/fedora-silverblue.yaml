@@ -55,23 +55,23 @@ jobs:
             --workdir=/mnt"
     steps:
 
-      # - name: Reclaim disk space on the host
-      #   run: |
-      #     set -xeuo pipefail
-      #     # sudo ls -lah /run/host
-      #     sudo rm -rf /run/host/usr/share/dotnet /run/host/usr/local/lib/android /run/host/opt/ghc /run/host/opt/hostedtoolcache/CodeQL
-      #     sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-      #     echo "Available disk storage:"
-      #     df -h
-
       # Reclaim disk space on the host
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # This might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          # tool-cache: false
-          tool-cache: true
+      - name: Reclaim disk space on the host
+        run: |
+          set -xeuo pipefail
+          # sudo ls -lah /run/host
+          sudo rm -rf /run/host/usr/share/dotnet /run/host/usr/local/lib/android /run/host/opt/ghc /run/host/opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          echo "Available disk storage:"
+          df -h
+
+      # - name: Free Disk Space (Ubuntu)
+      #   uses: jlumbroso/free-disk-space@main
+      #   with:
+      #     # This might remove tools that are actually needed,
+      #     # if set to "true" but frees about 6 GB
+      #     # tool-cache: false
+      #     tool-cache: true
 
       - name: Fixup GitHub homedir
         run: |
