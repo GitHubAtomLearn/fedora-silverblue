@@ -1,4 +1,4 @@
-name: "Build Fedora SilverBlue Testing Image"
+name: "Build Fedora Silverblue Testing Image"
 
 env:
   NAME: "fedora-silverblue-testing"

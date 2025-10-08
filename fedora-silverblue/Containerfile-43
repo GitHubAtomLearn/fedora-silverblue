@@ -1,0 +1,59 @@
+FROM quay.io/fedora-ostree-desktops/silverblue:43
+# FROM quay.io/fedora/fedora-silverblue:43
+
+# Keep container image for 3 weeks
+# LABEL quay.expires-after=3w
+
+LABEL org.opencontainers.image.title="Fedora SilverBlue 43"
+LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue 43"
+LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
+LABEL org.opencontainers.image.licenses="MIT"
+#LABEL quay.expires-after=""
+
+# Copy custom config to /usr & /etc
+COPY usr usr
+COPY etc etc
+
+# COPY scripts/initramfs-zstd.sh /tmp
+# COPY scripts/initramfs.sh /tmp
+# COPY scripts/install-qemu.sh /tmp
+# COPY scripts/install-libvirtd.sh /tmp
+# COPY scripts/fedora-packages.sh /tmp
+# COPY scripts/remove-fedora-packages.txt /tmp
+# COPY scripts/install-fedora-packages.txt /tmp
+# COPY scripts/install-vscodium.sh /tmp
+
+COPY scripts /tmp/scripts
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /tmp/uv
+
+# - Install RPM Fusion Free and Nonfree Repositories
+# - Install NVIDIA driver
+# - Replace nano with vim
+# - Remove plymouth
+# - Replace noopenh264 with openh264
+# - Remove and Install various packages
+# - Enable libvirtd
+# - Remove SetUID/SetGID bits
+# - Cleanup
+
+RUN <<EORUN
+    set -xeuo pipefail
+    mkdir --parents /etc/backgrounds/f43/default
+    mv /usr/share/backgrounds/f43/default/f43.xml /etc/backgrounds/f43/default
+    ln --symbolic /etc/backgrounds/f43/default/f43.xml /usr/share/backgrounds/f43/default
+
+    # /tmp/scripts/initramfs-zstd.sh
+    /tmp/scripts/initramfs.sh
+    /tmp/scripts/fedora-packages.sh
+    # /tmp/scripts/install-qemu.sh
+    /tmp/scripts/install-libvirtd.sh
+    /tmp/scripts/install-vscodium.sh
+    /tmp/scripts/koji-download-build.sh
+
+    rpm-ostree cleanup --repomd
+    dnf clean all
+    # rm --recursive --force /var/* /tmp/* /boot/*
+    rm --recursive --force /var /tmp /boot
+    mkdir /var /tmp /boot
+    bootc container lint --no-truncate --fatal-warnings
+EORUN

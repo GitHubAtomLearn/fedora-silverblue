@@ -1,23 +1,23 @@
-FROM localhost/fedora-silverblue:42
+FROM localhost/fedora-silverblue:43
 
 # Keep container image for 3 weeks
 #LABEL quay.expires-after=3w
 
-LABEL org.opencontainers.image.title="Fedora SilverBlue 42 Testing"
-LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue 42"
+LABEL org.opencontainers.image.title="Fedora SilverBlue 43 Testing"
+LABEL org.opencontainers.image.description="Customized image of Fedora SilverBlue 43"
 LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
 LABEL org.opencontainers.image.licenses="MIT"
 #LABEL quay.expires-after=""
 
 # Fix day/night background transition feature
-#RUN sed --in-place="-ORIGINAL" 's/.png/.webp/g' /usr/share/backgrounds/f42/default/f42.xml && \
+#RUN sed --in-place="-ORIGINAL" 's/.png/.webp/g' /usr/share/backgrounds/f43/default/f43.xml && \
 RUN <<EORUN
     set -xeuo pipefail
-    mkdir --parents /etc/backgrounds/f42/default
-    mv /usr/share/backgrounds/f42/default/f42.xml /etc/backgrounds/f42/default
-    ln --symbolic /etc/backgrounds/f42/default/f42.xml /usr/share/backgrounds/f42/default
+    mkdir --parents /etc/backgrounds/f43/default
+    mv /usr/share/backgrounds/f43/default/f43.xml /etc/backgrounds/f43/default
+    ln --symbolic /etc/backgrounds/f43/default/f43.xml /usr/share/backgrounds/f43/default
 
-#RUN sed --in-place="-ORIGINAL" 's,<filename>/usr/share/backgrounds/f42/default/f42.xml</filename>,<filename>/etc/backgrounds/f42/default/f42.xml</filename>,' /usr/share/gnome-background-properties/f42.xml && \
+#RUN sed --in-place="-ORIGINAL" 's,<filename>/usr/share/backgrounds/f43/default/f43.xml</filename>,<filename>/etc/backgrounds/f43/default/f43.xml</filename>,' /usr/share/gnome-background-properties/f43.xml && \
 
 #COPY --chmod=644 usr/lib/systemd/system/fedora-atomic-desktops-static-grub-migration.service usr/lib/systemd/system/fedora-atomic-desktops-static-grub-migration.service
 #COPY --chmod=755 usr/libexec/fedora-atomic-desktops-static-grub-migration usr/libexec/fedora-atomic-desktops-static-grub-migration
