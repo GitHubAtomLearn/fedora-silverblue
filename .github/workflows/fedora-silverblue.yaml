@@ -1,11 +1,11 @@
-name: "Build Fedora SilverBlue Image"
+name: "Build Fedora Silverblue Image"
 
 env:
   NAME: "fedora-silverblue"
   REGISTRY: "quay.io/operatement"
-  BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:42"
-  # Temporary switch to quay.io/fedora/fedora-silverblue:42
-  #BASEIMAGE: "quay.io/fedora/fedora-silverblue:42"
+  BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:43"
+  # Temporary switch to quay.io/fedora/fedora-silverblue:43
+  #BASEIMAGE: "quay.io/fedora/fedora-silverblue:43"
 
 on:
 
@@ -15,19 +15,19 @@ on:
     paths:
       - 'fedora-silverblue/**'
       - '.github/workflows/fedora-silverblue.yaml'
-      
+
   push:
     branches:
       - main
     paths:
       - 'fedora-silverblue/**'
       - '.github/workflows/fedora-silverblue.yaml'
-      
+
   schedule:
     - cron: '0 4 * * *'
-    # Temporary switch to quay.io/fedora/fedora-silverblue:42
+    # Temporary switch to quay.io/fedora/fedora-silverblue:43
     #- cron: '30 13 * * *'
-    
+
   workflow_dispatch:
     inputs:
       version:
@@ -55,14 +55,27 @@ jobs:
             --workdir=/mnt"
     steps:
 
+      # Reclaim disk space on the host
       - name: Reclaim disk space on the host
         run: |
           set -xeuo pipefail
           # sudo ls -lah /run/host
           sudo rm -rf /run/host/usr/share/dotnet /run/host/usr/local/lib/android /run/host/opt/ghc /run/host/opt/hostedtoolcache/CodeQL
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-          echo "Available disk storage:"
+          sudo rm -rf /usr/local/graalvm /usr/local/.ghcup /usr/local/share/powershell /usr/local/share/chromium /usr/local/lib/node_modules
+          sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
+          sudo swapoff --all
+          sudo rm -f /mnt/swapfile
+          echo -e "\nAvailable disk storage:"
           df -h
+
+      # - name: Free Disk Space (Ubuntu)
+      #   uses: jlumbroso/free-disk-space@main
+      #   with:
+      #     # This might remove tools that are actually needed,
+      #     # if set to "true" but frees about 6 GB
+      #     # tool-cache: false
+      #     tool-cache: true
 
       - name: Fixup GitHub homedir
         run: |
@@ -114,9 +127,9 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.NAME }}
-          # tags: '42'
+          # tags: '43'
           tags: build
-          containerfiles: ${{ env.NAME }}/Containerfile-42
+          containerfiles: ${{ env.NAME }}/Containerfile-43
           context: ${{ env.NAME }}
           layers: false
           oci: true
@@ -125,10 +138,11 @@ jobs:
       - name: Rechunk container image
         run: |
           set -xexo pipefail
-          # podman image rm quay.io/fedora-ostree-desktops/silverblue:42
+          # podman image rm quay.io/fedora-ostree-desktops/silverblue:43
           podman image prune --force --build-cache
           podman image prune --force
-          rpm-ostree experimental compose build-chunked-oci \
+          # rpm-ostree experimental compose build-chunked-oci \
+          rpm-ostree compose build-chunked-oci \
             --bootc --format-version=1 \
             --max-layers 96 \
             --from localhost/${NAME}:build \
@@ -147,22 +161,22 @@ jobs:
         with:
           image: ${{ env.NAME }}
           # tags: latest
-          tags: '42'
+          tags: '43'
           containerfiles: ${{ env.NAME }}/Containerfile.labels
           context: ${{ env.NAME }}
           layers: false
           oci: true
           labels: |
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
-            org.opencontainers.image.title="Fedora SilverBlue 42"
-            org.opencontainers.image.description="Customized image of Fedora SilverBlue 42"
+            org.opencontainers.image.title="Fedora SilverBlue 43"
+            org.opencontainers.image.description="Customized image of Fedora SilverBlue 43"
             org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
             org.opencontainers.image.licenses="MIT"
 
-      # SilverBlue 42 Container Image
+      # SilverBlue 43 Container Image
 
       - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.9.2
+        uses: sigstore/cosign-installer@v3.10.0
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
 
       - name: Login to Container Registry
@@ -183,7 +197,7 @@ jobs:
           password: ${{ secrets.BOT_SECRET }}
           image: ${{ env.NAME }}
           registry: ${{ env.REGISTRY }}
-          tags: '42'
+          tags: '43'
           extra-args: |
             --compression-format=zstd
         # --compression-level=19

@@ -1,0 +1,12 @@
+# koji-download-build.py packages list
+
+# [packages]
+packages = [
+"rust-bootupd",
+"bootc",
+"ostree",
+"rpm-ostree",
+"python3.14",
+"krb5",
+"gcc",
+]

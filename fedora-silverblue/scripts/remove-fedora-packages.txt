@@ -11,6 +11,8 @@ plymouth-system-theme
 plymouth-theme-spinner
 yelp
 gnome-tour
+firefox
+# noopenh264
 # malcontent
 # malcontent-control
 # malcontent-libs
