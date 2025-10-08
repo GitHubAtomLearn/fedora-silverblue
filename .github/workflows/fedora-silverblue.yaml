@@ -63,7 +63,6 @@ jobs:
           sudo rm -rf /run/host/usr/share/dotnet /run/host/usr/local/lib/android /run/host/opt/ghc /run/host/opt/hostedtoolcache/CodeQL
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
           sudo rm -rf /usr/local/graalvm /usr/local/.ghcup /usr/local/share/powershell /usr/local/share/chromium /usr/local/lib/node_modules
-          sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
           sudo swapoff --all
           sudo rm -f /mnt/swapfile
           echo -e "\nAvailable disk storage:"

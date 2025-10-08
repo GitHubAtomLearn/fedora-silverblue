@@ -15,7 +15,7 @@ dockerfile = "/var/home/hricky/OSTree/fedora-atomic-desktops/silverblue/fedora-s
 tag = "localhost/fedora-silverblue:43"
 
 ## Generate a new container image with split, reproducible, chunked layers
-rechunk = true
+rechunk = false
 # Configure the number of output layers
 max_layers = 96
 # Operate on this image in the container storage
