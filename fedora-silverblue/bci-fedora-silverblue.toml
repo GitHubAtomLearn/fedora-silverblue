@@ -1,8 +1,10 @@
 # Bootable container image auto-build config file
 
+# [source]
 ## The location from which to pull the container image
 image = "quay.io/fedora-ostree-desktops/silverblue:43"
 
+# [build]
 ## Build an container image
 # Display the full log after the image build process is complete
 log = true
@@ -11,9 +13,10 @@ log = true
 dockerfile = "/var/home/hricky/OSTree/fedora-atomic-desktops/silverblue/fedora-silverblue/fedora-silverblue/Containerfile-43"
 # dockerfile = "/var/home/hricky/bootable-containers/bootable-container-image/examples/Containerfile"
 # Name (tag) for the resulting image
-# tag = "localhost/fedora-silverblue:43-build"
-tag = "localhost/fedora-silverblue:43"
+tag = "localhost/fedora-silverblue:43-build"
+# tag = "localhost/fedora-silverblue:43"
 
+# [rechunk]
 ## Generate a new container image with split, reproducible, chunked layers
 rechunk = true
 # Configure the number of output layers
@@ -21,4 +24,13 @@ max_layers = 96
 # Operate on this image in the container storage
 from_image = "localhost/fedora-silverblue:43-build"
 # Output a new image to the container storage
-to_image = "localhost/fedora-bootc:43"
+# to_image = "localhost/fedora-bootc:43"
+to_image = "localhost/fedora-bootc:43-rechunked"
+
+# [relabel]
+## Add labels to (relabel) container image
+relabel = true
+
+# [push]
+## Push image to container registry
+push = false
