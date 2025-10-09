@@ -59,8 +59,10 @@ jobs:
       - name: Reclaim disk space on the host
         run: |
           set -xeuo pipefail
+          
           echo -e "\nAvailable disk storage:"
-          df -h
+          sudo df -h
+          echo -e "\n"
           sudo ls -lah /run/host
 
           files=(
@@ -74,6 +76,7 @@ jobs:
           "/run/host/opt/hostedtoolcache/CodeQL"
           "/run/host/opt/ghc"
           "/run/host/usr/share/dotnet"
+          "/run/host/snap"
           )
           for file in ${files[@]}; do
             sudo rm -rf ${file}
@@ -82,7 +85,9 @@ jobs:
           sudo rm -f /mnt/swapfile
 
           echo -e "\nAvailable disk storage:"
-          df -h
+          sudo df -h
+          echo -e "\n"
+          sudo ls -lah /run/host
 
           # "/opt/hostedtoolcache/CodeQL"
           # "/usr/local/lib/android"
