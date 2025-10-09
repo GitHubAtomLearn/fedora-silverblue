@@ -64,7 +64,7 @@ jobs:
           sudo df -h
           # echo -e "\n"
           sudo ls -lah /run/host
-          sudo du --human-readable --total --max-depth=1 / | sort --human-numeric-sort
+          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --total --max-depth=1 /run/host | sort --human-numeric-sort
 
           files=(
           "/run/host/usr/local/lib/android"
@@ -90,7 +90,6 @@ jobs:
           sudo df -h
           # echo -e "\n"
           sudo ls -lah /run/host
-          sudo du --human-readable --total --max-depth=1 / | sort --human-numeric-sort
 
           # "/opt/hostedtoolcache/CodeQL"
           # "/usr/local/lib/android"
