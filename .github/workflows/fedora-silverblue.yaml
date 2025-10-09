@@ -62,8 +62,9 @@ jobs:
           
           echo -e "\nAvailable disk storage:"
           sudo df -h
-          echo -e "\n"
+          # echo -e "\n"
           sudo ls -lah /run/host
+          sudo du --human-readable --total --max-depth=1 / | sort --human-numeric-sort
 
           files=(
           "/run/host/usr/local/lib/android"
@@ -76,6 +77,7 @@ jobs:
           "/run/host/opt/hostedtoolcache/CodeQL"
           "/run/host/opt/ghc"
           "/run/host/usr/share/dotnet"
+          "/run/host/opt"
           "/run/host/snap"
           )
           for file in ${files[@]}; do
@@ -86,8 +88,9 @@ jobs:
 
           echo -e "\nAvailable disk storage:"
           sudo df -h
-          echo -e "\n"
+          # echo -e "\n"
           sudo ls -lah /run/host
+          sudo du --human-readable --total --max-depth=1 / | sort --human-numeric-sort
 
           # "/opt/hostedtoolcache/CodeQL"
           # "/usr/local/lib/android"
@@ -146,7 +149,7 @@ jobs:
       #   env:
       #     VERSION: ${{ inputs.version }}
 
-      # - name: Build SilverBlue Container Image
+      # - name: Build Silverblue Container Image
       #   uses: redhat-actions/buildah-build@v2
       #   with:
       #     image: ${{ env.NAME }}
@@ -191,12 +194,12 @@ jobs:
       #     oci: true
       #     labels: |
       #       org.opencontainers.image.version=${{ steps.version.outputs.version }}
-      #       org.opencontainers.image.title="Fedora SilverBlue 43"
-      #       org.opencontainers.image.description="Customized image of Fedora SilverBlue 43"
+      #       org.opencontainers.image.title="Fedora Silverblue 43"
+      #       org.opencontainers.image.description="Customized image of Fedora Silverblue 43"
       #       org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
       #       org.opencontainers.image.licenses="MIT"
 
-      # # SilverBlue 43 Container Image
+      # # Silverblue 43 Container Image
 
       # - name: Install Cosign
       #   uses: sigstore/cosign-installer@v3.10.0
@@ -211,7 +214,7 @@ jobs:
       #     password: ${{ secrets.BOT_SECRET }}
       #     auth_file_path: /tmp/auth.json
 
-      # - name: Push SilverBlue Image to Container Registry
+      # - name: Push Silverblue Image to Container Registry
       #   uses: redhat-actions/push-to-registry@v2
       #   id: push
       #   if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
@@ -225,7 +228,7 @@ jobs:
       #       --compression-format=zstd
       #   # --compression-level=19
 
-      # - name: Sign SilverBlue Container Image
+      # - name: Sign Silverblue Container Image
       #   if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
       #   run: |
       #     cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push.outputs.digest }}
