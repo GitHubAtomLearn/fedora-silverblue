@@ -8,6 +8,7 @@ packages = [
 "rpm-ostree",
 "python3.14",
 "libvirt",
+"qemu",
 "krb5",
 "gcc",
 ]
