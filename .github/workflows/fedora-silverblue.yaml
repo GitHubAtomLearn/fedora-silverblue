@@ -64,7 +64,14 @@ jobs:
           sudo df -h
           # echo -e "\n"
           sudo ls -lah /run/host
-          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --total --max-depth=1 /run/host | sort --human-numeric-sort
+          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host | sort --human-numeric-sort
+          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /__e | sort --human-numeric-sort
+          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /mnt | sort --human-numeric-sort
+          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /__t | sort --human-numeric-sort
+          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/mnt | sort --human-numeric-sort
+          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/opt | sort --human-numeric-sort
+          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/var | sort --human-numeric-sort
+          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr | sort --human-numeric-sort
 
           files=(
           "/run/host/usr/local/lib/android"
