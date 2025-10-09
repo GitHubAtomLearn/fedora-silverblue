@@ -75,16 +75,25 @@ jobs:
           sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/var | sort --human-numeric-sort
           # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr | sort --human-numeric-sort
           sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/local | sort --human-numeric-sort
+          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/local/lib | sort --human-numeric-sort
           sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/lib | sort --human-numeric-sort
           sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/share | sort --human-numeric-sort
 
           files=(
-          "/run/host/usr/local/lib/android"
           "/run/host/usr/local/.ghcup"
+          "/run/host/usr/local/graalvm"
+          "/run/host/usr/local/man"
+          "/run/host/usr/local/doc"
+          "/run/host/usr/local/include"
+          "/run/host/usr/local/n"
+          "/run/host/usr/local/aws-sam-cli"
+          "/run/host/usr/local/aws-cli"
+          "/run/host/usr/local/bin"
+          "/run/host/usr/local/julia1.11.7"
+          "/run/host/usr/local/lib/node_modules"
+          "/run/host/usr/local/lib/android"
           "/run/host/usr/local/share/powershell"
           "/run/host/usr/local/share/chromium"
-          "/run/host/usr/local/lib/node_modules"
-          "/run/host/usr/local/graalvm"
           "/run/host/usr/share/javascript"
           "/run/host/usr/share/automake-1.16"
           "/run/host/usr/share/dbus-1"
@@ -134,11 +143,6 @@ jobs:
           "/run/host/usr/share/miniconda"
           "/run/host/usr/share/swift"
           "/run/host/usr/share/dotnet"
-          "/run/host/opt"
-          "/run/host/snap"
-          "/run/host/__e"
-          "/run/host/__t"
-          "/run/host/usr/games"
           "/run/host/usr/lib/apt"
           "/run/host/usr/lib/aspell"
           "/run/host/usr/lib/locale"
@@ -162,6 +166,11 @@ jobs:
           "/run/host/usr/lib/llvm-18"
           "/run/host/usr/lib/google-cloud-sdk"
           "/run/host/usr/lib/jvm"
+          "/run/host/opt"
+          "/run/host/snap"
+          "/run/host/__e"
+          "/run/host/__t"
+          "/run/host/usr/games"
           )
           # /run/host/usr/lib/x86_64-linux-gnu
           
