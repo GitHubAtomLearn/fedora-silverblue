@@ -187,146 +187,135 @@ jobs:
           # echo -e "\n"
           sudo ls -lah /run/host
 
+      - name: Fixup GitHub homedir
+        run: |
+          set -xeuo pipefail
+          mkdir -p /github/home/.docker/
 
+      - name: Install tools in the container
+        run: |
+          set -xeuo pipefail
+          dnf --refresh install -y \
+            git-core jq rpm-ostree buildah skopeo \
+            --exclude container-selinux --no-docs
+          dnf clean all
 
+      - name: Set alternate location of image store
+        run: |
+            set -xeuo pipefail
+            sed -i 's/^\# imagestore = ""$/imagestore = "\/mnt"/' /usr/share/containers/storage.conf
+            grep -E '^imagestore = ".*"$' /usr/share/containers/storage.conf
 
-      # # - name: Free Disk Space (Ubuntu)
-      # #   uses: jlumbroso/free-disk-space@main
-      # #   with:
-      # #     # This might remove tools that are actually needed,
-      # #     # if set to "true" but frees about 6 GB
-      # #     # tool-cache: false
-      # #     tool-cache: true
+      - name: Checkout Repo
+        uses: actions/checkout@v5
 
-      # - name: Fixup GitHub homedir
-      #   run: |
-      #     set -xeuo pipefail
-      #     mkdir -p /github/home/.docker/
+      - name: Figure out version
+        id: version
+        run: |
+          set -xexo pipefail
+          if [[ -n ${VERSION} ]]; then
+            version="${VERSION}"
+          else
+            version_base="$(skopeo inspect docker://${BASEIMAGE} | jq -r '.Labels."org.opencontainers.image.version"')"
+            version_derived="$(skopeo inspect docker://${REGISTRY}/${NAME} | jq -r '.Labels."org.opencontainers.image.version"' || true)"
+            if [[ -z "${version_derived}" ]]; then
+              version="${version_base}"
+            elif [[ "${version_base}" == "${version_derived}" ]]; then
+              patch="${version_base##*\.}"
+              ((patch++)) || true
+              version="${version_base%\.*}.${patch}"
+            else
+              version="${version_base}"
+            fi
+          fi
+          echo "Using version: ${version}"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+        env:
+          VERSION: ${{ inputs.version }}
 
-      # - name: Install tools in the container
-      #   run: |
-      #     set -xeuo pipefail
-      #     dnf --refresh install -y \
-      #       git-core jq rpm-ostree buildah skopeo \
-      #       --exclude container-selinux --no-docs
-      #     dnf clean all
+      - name: Build Silverblue Container Image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.NAME }}
+          # tags: '43'
+          tags: build
+          containerfiles: ${{ env.NAME }}/Containerfile-43
+          context: ${{ env.NAME }}
+          layers: false
+          oci: true
+          # labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
-      # - name: Set alternate location of image store
-      #   run: |
-      #       set -xeuo pipefail
-      #       sed -i 's/^\# imagestore = ""$/imagestore = "\/mnt"/' /usr/share/containers/storage.conf
-      #       grep -E '^imagestore = ".*"$' /usr/share/containers/storage.conf
+      - name: Rechunk container image
+        run: |
+          set -xexo pipefail
+          # podman image rm quay.io/fedora-ostree-desktops/silverblue:43
+          podman image prune --force --build-cache
+          podman image prune --force
+          # rpm-ostree experimental compose build-chunked-oci \
+          rpm-ostree compose build-chunked-oci \
+            --bootc --format-version=1 \
+            --max-layers 96 \
+            --from localhost/${NAME}:build \
+            --output containers-storage:localhost/${NAME}:rechunked
+          # echo "Available disk storage:"
+          # df -h
+          # du -h -d 1 "${PWD}" | sort -h
 
-      # - name: Checkout Repo
-      #   uses: actions/checkout@v5
+      - name: Write NOP Containerfile
+        run: |
+          set -xexo pipefail
+          echo "FROM localhost/${NAME}:rechunked" > ${NAME}/Containerfile.labels
 
-      # - name: Figure out version
-      #   id: version
-      #   run: |
-      #     set -xexo pipefail
-      #     if [[ -n ${VERSION} ]]; then
-      #       version="${VERSION}"
-      #     else
-      #       version_base="$(skopeo inspect docker://${BASEIMAGE} | jq -r '.Labels."org.opencontainers.image.version"')"
-      #       version_derived="$(skopeo inspect docker://${REGISTRY}/${NAME} | jq -r '.Labels."org.opencontainers.image.version"' || true)"
-      #       if [[ -z "${version_derived}" ]]; then
-      #         version="${version_base}"
-      #       elif [[ "${version_base}" == "${version_derived}" ]]; then
-      #         patch="${version_base##*\.}"
-      #         ((patch++)) || true
-      #         version="${version_base%\.*}.${patch}"
-      #       else
-      #         version="${version_base}"
-      #       fi
-      #     fi
-      #     echo "Using version: ${version}"
-      #     echo "version=${version}" >> "$GITHUB_OUTPUT"
-      #   env:
-      #     VERSION: ${{ inputs.version }}
+      - name: Add labels to container image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.NAME }}
+          # tags: latest
+          tags: '43'
+          containerfiles: ${{ env.NAME }}/Containerfile.labels
+          context: ${{ env.NAME }}
+          layers: false
+          oci: true
+          labels: |
+            org.opencontainers.image.version=${{ steps.version.outputs.version }}
+            org.opencontainers.image.title="Fedora Silverblue 43"
+            org.opencontainers.image.description="Customized image of Fedora Silverblue 43"
+            org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
+            org.opencontainers.image.licenses="MIT"
 
-      # - name: Build Silverblue Container Image
-      #   uses: redhat-actions/buildah-build@v2
-      #   with:
-      #     image: ${{ env.NAME }}
-      #     # tags: '43'
-      #     tags: build
-      #     containerfiles: ${{ env.NAME }}/Containerfile-43
-      #     context: ${{ env.NAME }}
-      #     layers: false
-      #     oci: true
-      #     # labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
+      # Silverblue 43 Container Image
 
-      # - name: Rechunk container image
-      #   run: |
-      #     set -xexo pipefail
-      #     # podman image rm quay.io/fedora-ostree-desktops/silverblue:43
-      #     podman image prune --force --build-cache
-      #     podman image prune --force
-      #     # rpm-ostree experimental compose build-chunked-oci \
-      #     rpm-ostree compose build-chunked-oci \
-      #       --bootc --format-version=1 \
-      #       --max-layers 96 \
-      #       --from localhost/${NAME}:build \
-      #       --output containers-storage:localhost/${NAME}:rechunked
-      #     # echo "Available disk storage:"
-      #     # df -h
-      #     # du -h -d 1 "${PWD}" | sort -h
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.10.0
+        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
 
-      # - name: Write NOP Containerfile
-      #   run: |
-      #     set -xexo pipefail
-      #     echo "FROM localhost/${NAME}:rechunked" > ${NAME}/Containerfile.labels
+      - name: Login to Container Registry
+        uses: redhat-actions/podman-login@v1
+        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.BOT_USERNAME }}
+          password: ${{ secrets.BOT_SECRET }}
+          auth_file_path: /tmp/auth.json
 
-      # - name: Add labels to container image
-      #   uses: redhat-actions/buildah-build@v2
-      #   with:
-      #     image: ${{ env.NAME }}
-      #     # tags: latest
-      #     tags: '43'
-      #     containerfiles: ${{ env.NAME }}/Containerfile.labels
-      #     context: ${{ env.NAME }}
-      #     layers: false
-      #     oci: true
-      #     labels: |
-      #       org.opencontainers.image.version=${{ steps.version.outputs.version }}
-      #       org.opencontainers.image.title="Fedora Silverblue 43"
-      #       org.opencontainers.image.description="Customized image of Fedora Silverblue 43"
-      #       org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
-      #       org.opencontainers.image.licenses="MIT"
+      - name: Push Silverblue Image to Container Registry
+        uses: redhat-actions/push-to-registry@v2
+        id: push
+        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        with:
+          username: ${{ secrets.BOT_USERNAME }}
+          password: ${{ secrets.BOT_SECRET }}
+          image: ${{ env.NAME }}
+          registry: ${{ env.REGISTRY }}
+          tags: '43'
+          extra-args: |
+            --compression-format=zstd
+        # --compression-level=19
 
-      # # Silverblue 43 Container Image
-
-      # - name: Install Cosign
-      #   uses: sigstore/cosign-installer@v3.10.0
-      #   if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-
-      # - name: Login to Container Registry
-      #   uses: redhat-actions/podman-login@v1
-      #   if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-      #   with:
-      #     registry: ${{ env.REGISTRY }}
-      #     username: ${{ secrets.BOT_USERNAME }}
-      #     password: ${{ secrets.BOT_SECRET }}
-      #     auth_file_path: /tmp/auth.json
-
-      # - name: Push Silverblue Image to Container Registry
-      #   uses: redhat-actions/push-to-registry@v2
-      #   id: push
-      #   if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-      #   with:
-      #     username: ${{ secrets.BOT_USERNAME }}
-      #     password: ${{ secrets.BOT_SECRET }}
-      #     image: ${{ env.NAME }}
-      #     registry: ${{ env.REGISTRY }}
-      #     tags: '43'
-      #     extra-args: |
-      #       --compression-format=zstd
-      #   # --compression-level=19
-
-      # - name: Sign Silverblue Container Image
-      #   if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-      #   run: |
-      #     cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push.outputs.digest }}
-      #   env:
-      #     COSIGN_EXPERIMENTAL: false
-      #     COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+      - name: Sign Silverblue Container Image
+        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        run: |
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ env.REGISTRY }}/${{ env.NAME }}@${{ steps.push.outputs.digest }}
+        env:
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}

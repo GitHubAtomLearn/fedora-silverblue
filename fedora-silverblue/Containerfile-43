@@ -48,7 +48,7 @@ RUN <<EORUN
     # /tmp/scripts/install-qemu.sh
     # /tmp/scripts/install-libvirtd.sh
     /tmp/scripts/install-vscodium.sh
-    /tmp/scripts/koji-download-build.sh
+    /tmp/scripts/koji-download-build/koji-download-build.sh
 
     rpm-ostree cleanup --repomd
     dnf clean all

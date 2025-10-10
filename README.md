@@ -1,4 +1,4 @@
-# Custom Fedora SilverBlue images with some removed and overlayed packages
+# Custom Fedora Silverblue bootable container images
 
 
 ## License
