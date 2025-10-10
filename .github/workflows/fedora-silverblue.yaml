@@ -164,6 +164,7 @@ jobs:
           "/run/host/usr/lib/llvm-16"
           "/run/host/usr/lib/llvm-18"
           "/run/host/usr/lib/google-cloud-sdk"
+          "/run/host/usr/lib/x86_64-linux-gnu"
           "/run/host/usr/lib/jvm"
           "/run/host/usr/games"
           "/run/host/var/spool"
@@ -174,7 +175,6 @@ jobs:
           "/run/host/__e"
           "/run/host/__t"
           )
-          # /run/host/usr/lib/x86_64-linux-gnu
           
           for file in ${files[@]}; do
             sudo rm -rf ${file}
