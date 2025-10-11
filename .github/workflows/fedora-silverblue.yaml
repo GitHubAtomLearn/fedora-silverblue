@@ -55,129 +55,11 @@ jobs:
             --workdir=/mnt"
     steps:
 
-      # Reclaim disk space on the host
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+
       - name: Reclaim disk space on the host
-        run: |
-          set -xeuo pipefail
-          
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /__e | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /mnt | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /mnt/mnt | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/mnt | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /__t | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/opt | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/var | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/local | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/local/lib | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/lib | sort --human-numeric-sort
-          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/share | sort --human-numeric-sort
-
-          files=(
-          "/run/host/usr/local/.ghcup"
-          "/run/host/usr/local/graalvm"
-          "/run/host/usr/local/man"
-          "/run/host/usr/local/doc"
-          "/run/host/usr/local/n"
-          "/run/host/usr/local/aws-sam-cli"
-          "/run/host/usr/local/aws-cli"
-          "/run/host/usr/local/julia*"
-          "/run/host/usr/local/lib/python*"
-          "/run/host/usr/local/lib/node_modules"
-          "/run/host/usr/local/lib/android"
-          "/run/host/usr/local/share/powershell"
-          "/run/host/usr/local/share/chromium"
-          "/run/host/usr/share/javascript"
-          "/run/host/usr/share/automake*"
-          "/run/host/usr/share/dbus*"
-          "/run/host/usr/share/google-cloud-sdk"
-          "/run/host/usr/share/iso-codes"
-          "/run/host/usr/share/lintian"
-          "/run/host/usr/share/xml"
-          "/run/host/usr/share/apache2"
-          "/run/host/usr/share/autoconf"
-          "/run/host/usr/share/groff"
-          "/run/host/usr/share/info"
-          "/run/host/usr/share/misc"
-          "/run/host/usr/share/php"
-          "/run/host/usr/share/grub"
-          "/run/host/usr/share/python-wheels"
-          "/run/host/usr/share/consolefonts"
-          "/run/host/usr/share/fwupd"
-          "/run/host/usr/share/bash-completion"
-          "/run/host/usr/share/postgresql"
-          "/run/host/usr/share/tcltk"
-          "/run/host/usr/share/gtk*"
-          "/run/host/usr/share/zoneinfo"
-          "/run/host/usr/share/swig*"
-          "/run/host/usr/share/X11"
-          "/run/host/usr/share/texinfo"
-          "/run/host/usr/share/mime"
-          "/run/host/usr/share/terminfo"
-          "/run/host/usr/share/perl*"
-          "/run/host/usr/share/mysql"
-          "/run/host/usr/share/apache-maven*"
-          "/run/host/usr/share/ieee-data"
-          "/run/host/usr/share/i18n"
-          "/run/host/usr/share/perl"
-          "/run/host/usr/share/python-babel-localedata"
-          "/run/host/usr/share/fonts"
-          "/run/host/usr/share/vim"
-          "/run/host/usr/share/java"
-          "/run/host/usr/share/icons"
-          "/run/host/usr/share/mecab"
-          "/run/host/usr/share/ri"
-          "/run/host/usr/share/doc"
-          "/run/host/usr/share/locale"
-          "/run/host/usr/share/kotlinc"
-          "/run/host/usr/share/man"
-          "/run/host/usr/share/gradle*"
-          "/run/host/usr/share/az_*"
-          "/run/host/usr/share/miniconda"
-          "/run/host/usr/share/swift"
-          "/run/host/usr/share/dotnet"
-          "/run/host/usr/lib/apt"
-          "/run/host/usr/lib/aspell"
-          "/run/host/usr/lib/locale"
-          "/run/host/usr/lib/apache2"
-          "/run/host/usr/lib/cgi-bin"
-          "/run/host/usr/lib/mysql"
-          "/run/host/usr/lib/7zip"
-          "/run/host/usr/lib/file"
-          "/run/host/usr/lib/linux-azure*"
-          "/run/host/usr/lib/php"
-          "/run/host/usr/lib/ruby"
-          "/run/host/usr/lib/modules"
-          "/run/host/usr/lib/postgresql"
-          "/run/host/usr/lib/python*"
-          "/run/host/usr/lib/snapd"
-          "/run/host/usr/lib/gcc"
-          "/run/host/usr/lib/firefox"
-          "/run/host/usr/lib/llvm*"
-          "/run/host/usr/lib/google-cloud-sdk"
-          "/run/host/usr/lib/jvm"
-          "/run/host/usr/games"
-          "/run/host/var/spool"
-          "/run/host/var/www"
-          "/run/host/var/backups"
-          "/run/host/opt"
-          "/run/host/snap"
-          "/run/host/__e"
-          "/run/host/__t"
-          )
-          # /run/host/usr/lib/x86_64-linux-gnu
-
-          for file in ${files[@]}; do
-            sudo rm -rf ${file}
-          done
-          sudo swapoff --all
-          sudo rm -f /mnt/swapfile
-
-          echo -e "\nAvailable disk storage:"
-          sudo df -h
-          # echo -e "\n"
-          # sudo ls -lah /run/host
+        uses: GitHubAtomLearn/reclaim-disk-space@v0.1
 
       - name: Fixup GitHub homedir
         run: |
@@ -197,9 +79,6 @@ jobs:
             set -xeuo pipefail
             sed -i 's/^\# imagestore = ""$/imagestore = "\/mnt"/' /usr/share/containers/storage.conf
             grep -E '^imagestore = ".*"$' /usr/share/containers/storage.conf
-
-      - name: Checkout Repo
-        uses: actions/checkout@v5
 
       - name: Figure out version
         id: version
