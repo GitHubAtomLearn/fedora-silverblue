@@ -56,7 +56,7 @@ jobs:
     steps:
 
       - name: Reclaim disk space on the host
-        uses: GitHubAtomLearn/reclaim-disk-space@085da22c7bebf2ecbb47cf42c49d3585038105e3
+        uses: GitHubAtomLearn/reclaim-disk-space@8fe33859483adba20f36b8b842a81f2d368c57eb
 
       - name: Fixup GitHub homedir
         run: |
