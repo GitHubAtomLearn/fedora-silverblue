@@ -60,24 +60,19 @@ jobs:
         run: |
           set -xeuo pipefail
           
-          echo -e "\nAvailable disk storage:"
-          sudo df -h
-          # echo -e "\n"
-          sudo ls -lah /run/host
-
           # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host | sort --human-numeric-sort
           # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /__e | sort --human-numeric-sort
-          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /mnt | sort --human-numeric-sort
+          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /mnt | sort --human-numeric-sort
           # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /mnt/mnt | sort --human-numeric-sort
-          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/mnt | sort --human-numeric-sort
+          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/mnt | sort --human-numeric-sort
           # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /__t | sort --human-numeric-sort
           # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/opt | sort --human-numeric-sort
-          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/var | sort --human-numeric-sort
+          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/var | sort --human-numeric-sort
           # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr | sort --human-numeric-sort
-          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/local | sort --human-numeric-sort
-          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/local/lib | sort --human-numeric-sort
-          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/lib | sort --human-numeric-sort
-          sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/share | sort --human-numeric-sort
+          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/local | sort --human-numeric-sort
+          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/local/lib | sort --human-numeric-sort
+          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/lib | sort --human-numeric-sort
+          # sudo du --human-readable --exclude="/proc" --exclude="/run/host/proc" --exclude="/run/host/var/lib/docker" --total --max-depth=1 /run/host/usr/share | sort --human-numeric-sort
 
           files=(
           "/run/host/usr/local/.ghcup"
@@ -172,7 +167,7 @@ jobs:
           "/run/host/__t"
           )
           # /run/host/usr/lib/x86_64-linux-gnu
-          
+
           for file in ${files[@]}; do
             sudo rm -rf ${file}
           done
@@ -182,7 +177,7 @@ jobs:
           echo -e "\nAvailable disk storage:"
           sudo df -h
           # echo -e "\n"
-          sudo ls -lah /run/host
+          # sudo ls -lah /run/host
 
       - name: Fixup GitHub homedir
         run: |

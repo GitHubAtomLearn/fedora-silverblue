@@ -77,6 +77,7 @@ function main() {
     # --mount=type=bind,source=uv.lock,target=uv.lock \
     # --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     # set -xeuo pipefail
+    koji_download_build_dir="/tmp/scripts/koji-download-build"
     # pwd
     # ls -Zlathri
     # ls -Zlathri /tmp
@@ -86,7 +87,7 @@ function main() {
     # uv sync --locked --no-install-project --no-dev
     # /tmp/uv/uv sync --directory /tmp/scripts --no-install-local --no-install-project --no-install-workspace
     # uv sync --verbose --directory /tmp/scripts --no-install-local --no-install-project --no-install-workspace
-    uv sync --directory /tmp/scripts/koji-download-build --no-install-local --no-install-project --no-install-workspace
+    uv sync --directory ${koji_download_build_dir} --no-install-local --no-install-project --no-install-workspace
     # pwd
     # ls -Zlathri
     # ls -Zlathri /
@@ -95,12 +96,12 @@ function main() {
     # /tmp/uv/uv run \
     uv run \
         --verbose \
-        --directory /tmp/scripts/koji-download-build /tmp/scripts/koji-download-build/koji-download-build.py \
+        --directory ${koji_download_build_dir} ${koji_download_build_dir}/koji-download-build.py \
         --frozen --locked --managed-python --no-dev --no-python-downloads --no-sync --offline
     # uv run --frozen --locked --managed-python --no-dev --no-python-downloads --no-sync --offline \
     #     --directory /tmp/scripts /tmp/scripts/koji-download-build.py
     # /tmp/scripts/.venv/bin/python /tmp/scripts/koji-download-build.py
-    ls -Zlathri /tmp/rpms
+    # ls -Zlathri /tmp/rpms
     dnf install --assumeyes --refresh --allowerasing /tmp/rpms/*.rpm
     # dnf remove --assumeyes --refresh python3-devel krb5-devel gcc
     # dnf remove --assumeyes --refresh --no-autoremove python3-devel krb5-devel gcc
