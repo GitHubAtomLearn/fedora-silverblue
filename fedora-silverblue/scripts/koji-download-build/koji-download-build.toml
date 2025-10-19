@@ -1,22 +1,13 @@
 # koji-download-build.py packages list
 
 # [packages]
-# packages = [
-# "rust-bootupd",
-# "bootc",
-# "ostree",
-# "rpm-ostree",
-# "python3.14",
-# "libvirt",
-# "qemu",
-# "krb5",
-# "gcc",
-# ]
-
 rust-bootupd.debug = false
 bootc.debug = false
 ostree.debug = false
 rpm-ostree.debug = false
+podman.debug = false
+buildah.debug = false
+skopeo.debug = false
 "python3.14".debug = false
 libvirt.debug = false
 qemu.debug = false

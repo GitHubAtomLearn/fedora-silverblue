@@ -46,6 +46,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
+#   bind-mount-graphroot:
+#     runs-on: ubuntu-24.04
+#     steps:
+#       - name: Prepare the graphroot storage location
+#         shell: bash
+#         run: |
+#           # Bind mount /mnt/containers-storage over /var/lib/containers/storage
+#           set -xeuo pipefail
+
+#           sudo mkdir --parents /mnt/containers-storage
+#           sudo ls -lah /var/lib/containers
+#           sudo mount --bind /mnt/containers-storage /var/lib/containers/storage
+
+#           echo -e "\nAvailable disk storage:"
+#           sudo df --human-readable /mnt/containers-storage
+#           sudo df --human-readable /var/lib/containers/storage
+#           sudo lsblk -pfa
+
   build-push-image:
     runs-on: ubuntu-24.04
     container:
@@ -55,8 +74,23 @@ jobs:
             --workdir=/mnt"
     steps:
 
-      - name: Reclaim disk space on the host
-        uses: GitHubAtomLearn/reclaim-disk-space@8fe33859483adba20f36b8b842a81f2d368c57eb
+      # - name: Reclaim disk space on the host
+      #   uses: GitHubAtomLearn/reclaim-disk-space@8fe33859483adba20f36b8b842a81f2d368c57eb
+
+      - name: Prepare the graphroot storage location
+        shell: bash
+        run: |
+          # Bind mount /mnt/containers over /var/lib/containers
+          set -xeuo pipefail
+
+          sudo mkdir --parents /mnt/containers
+          sudo ls -lah /var/lib/containers
+          sudo mount --bind /mnt/containers /var/lib/containers
+
+          echo -e "\nAvailable disk storage:"
+          sudo df --human-readable /mnt/containers
+          sudo df --human-readable /var/lib/containers
+          sudo lsblk -pfa
 
       - name: Fixup GitHub homedir
         run: |
@@ -70,6 +104,11 @@ jobs:
             git-core jq rpm-ostree buildah skopeo \
             --exclude container-selinux --no-docs
           dnf clean all
+
+          echo -e "\nAvailable disk storage:"
+          sudo df --human-readable /mnt/containers
+          sudo df --human-readable /var/lib/containers
+          sudo lsblk -pfa
 
       - name: Set alternate location of image store
         run: |

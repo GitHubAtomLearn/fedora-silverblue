@@ -24,8 +24,8 @@ max_layers = 96
 # Operate on this image in the container storage
 from_image = "localhost/fedora-silverblue:43-build"
 # Output a new image to the container storage
-# to_image = "localhost/fedora-bootc:43"
-to_image = "localhost/fedora-bootc:43-rechunked"
+# to_image = "localhost/fedora-silverblue:43"
+to_image = "localhost/fedora-silverblue:43-rechunked"
 
 # [relabel]
 ## Add labels to (relabel) container image
