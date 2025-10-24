@@ -13,3 +13,4 @@ libvirt.debug = false
 qemu.debug = false
 krb5.debug = false
 gcc.debug = false
+golang.debug = false

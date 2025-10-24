@@ -5,7 +5,7 @@ env:
   REGISTRY: "quay.io/operatement"
   BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:43"
   # Temporary switch to quay.io/fedora/fedora-silverblue:43
-  #BASEIMAGE: "quay.io/fedora/fedora-silverblue:43"
+  # BASEIMAGE: "quay.io/fedora/fedora-silverblue:43"
 
 on:
 
@@ -26,7 +26,7 @@ on:
   schedule:
     - cron: '0 4 * * *'
     # Temporary switch to quay.io/fedora/fedora-silverblue:43
-    #- cron: '30 13 * * *'
+    # - cron: '30 13 * * *'
 
   workflow_dispatch:
     inputs:
@@ -46,29 +46,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
-#   bind-mount-graphroot:
-#     runs-on: ubuntu-24.04
-#     steps:
-#       - name: Prepare the graphroot storage location
-#         shell: bash
-#         run: |
-#           # Bind mount /mnt/containers-storage over /var/lib/containers/storage
-#           set -xeuo pipefail
-
-#           sudo mkdir --parents /mnt/containers-storage
-#           sudo ls -lah /var/lib/containers
-#           sudo mount --bind /mnt/containers-storage /var/lib/containers/storage
-
-#           echo -e "\nAvailable disk storage:"
-#           sudo df --human-readable /mnt/containers-storage
-#           sudo df --human-readable /var/lib/containers/storage
-#           sudo lsblk -pfa
-
   build-push-image:
     runs-on: ubuntu-24.04
     container:
-      image: quay.io/podman/stable
+      image: quay.io/containers/podman:latest
       options: "--security-opt=label=disable --privileged --user 0:0 --device=/dev/kvm --device=/dev/fuse \
             --volume /:/run/host:rw --volume /mnt:/mnt --volume /var/run/docker.sock:/var/run/docker.sock \
             --workdir=/mnt"
@@ -83,14 +64,14 @@ jobs:
           # Bind mount /mnt/containers over /var/lib/containers
           set -xeuo pipefail
 
-          sudo mkdir --parents /mnt/containers
           sudo ls -lah /var/lib/containers
+          sudo mkdir --parents /mnt/containers
           sudo mount --bind /mnt/containers /var/lib/containers
 
           echo -e "\nAvailable disk storage:"
-          sudo df --human-readable /mnt/containers
           sudo df --human-readable /var/lib/containers
-          sudo lsblk -pfa
+          sudo df --human-readable /mnt/containers
+          sudo lsblk --output NAME,PATH,TYPE,FSTYPE,SIZE,FSSIZE,FSUSED,FSAVAIL,FSUSE%,MOUNTPOINTS
 
       - name: Fixup GitHub homedir
         run: |
@@ -104,11 +85,6 @@ jobs:
             git-core jq rpm-ostree buildah skopeo \
             --exclude container-selinux --no-docs
           dnf clean all
-
-          echo -e "\nAvailable disk storage:"
-          sudo df --human-readable /mnt/containers
-          sudo df --human-readable /var/lib/containers
-          sudo lsblk -pfa
 
       - name: Set alternate location of image store
         run: |
@@ -196,7 +172,7 @@ jobs:
       # Silverblue 43 Container Image
 
       - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.10.0
+        uses: sigstore/cosign-installer@v4.0.0
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
 
       - name: Login to Container Registry
