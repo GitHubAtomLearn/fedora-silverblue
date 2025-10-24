@@ -26,15 +26,15 @@ def main():
     # with open(args.config_file, "rb") as file:
     with open("koji-download-build.toml", "rb") as file:
         config_dict = tomllib.load(file)
-    print(f"\n config_dict: {type(config_dict)} {config_dict}\n")
-    for key, value in config_dict.items():
-        print(f" {key}: {value}")
+    # print(f"\n config_dict: {type(config_dict)} {config_dict}\n")
+    # for key, value in config_dict.items():
+    #     print(f" {key}: {value}")
 
     # packages = ["bootc", "ostree"]
     # packages = config_dict["packages"]["packages"]
     # packages = config_dict["packages"]
     packages = list(config_dict)
-    print(f"\n packages: {type(packages)} {packages}\n")
+    # print(f"\n packages: {type(packages)} {packages}\n")
     
     os_release = platform.freedesktop_os_release()
     arch = platform.machine()
@@ -76,8 +76,8 @@ def main():
                 or "-debuginfo-" in name)
         
         for rpm in all_rpms:
-            # if rpm["arch"] == "noarch" or rpm["arch"] == arch:
-            if rpm["arch"] == "src" or rpm["arch"] == arch:
+            if rpm["arch"] == "noarch" or rpm["arch"] == arch:
+            # if rpm["arch"] == "src" or rpm["arch"] == arch:
                 # print(f"{rpm}\n")
 
                 # Compile the path (relative to build_path) where an rpm belongs
@@ -103,7 +103,7 @@ def main():
             # rpm_full_name = f"{rpm_from_list["name"]}-{rpm_from_list["version"]}-{rpm_from_list["release"]}.{arch}.rpm"
             rpm_full_name = f"{rpm_from_list["name"]}-{rpm_from_list["version"]}-{rpm_from_list["release"]}.{rpm_from_list["arch"]}.rpm"
             rpms_download_path = f"{rpms_download_dir}/{rpm_full_name}"
-            print(f" \n {index}. rpms_download_path {rpms_download_path}")
+            # print(f" \n {index}. rpms_download_path {rpms_download_path}")
 
             try:
                 response = requests.get(rpm_from_list["download_url"], allow_redirects=True)
