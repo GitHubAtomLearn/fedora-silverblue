@@ -83,9 +83,9 @@ jobs:
         run: |
           set -xeuo pipefail
           dnf --refresh install --assumeyes --allowerasing \
-            --no-docs --disable-repo fedora-cisco-openh264
+            --no-docs --disable-repo fedora-cisco-openh264 \
             --exclude container-selinux \
-            git-core jq rpm-ostree buildah skopeo \
+            git-core jq rpm-ostree buildah skopeo
           dnf clean all
 
       # - name: Set alternate location of image store
