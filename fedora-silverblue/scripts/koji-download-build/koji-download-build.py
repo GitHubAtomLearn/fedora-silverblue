@@ -56,7 +56,8 @@ def main():
         if len(arch) == 0:
             arch = None
         # all_rpms = session.listRPMs(buildID=latest_build["id"], arch=arch)
-        all_rpms = session.listRPMs(buildID=latest_build["build_id"], arches=arch)
+        # all_rpms = session.listRPMs(buildID=latest_build["build_id"], arches=arch)
+        all_rpms = session.listRPMs(buildID=latest_build["build_id"])
         if not all_rpms:
             if arch:
                 print("No %s packages available for %s" %
@@ -75,30 +76,34 @@ def main():
                 or "-debuginfo-" in name)
         
         for rpm in all_rpms:
-            # print(f"{rpm}\n")
+            # if rpm["arch"] == "noarch" or rpm["arch"] == arch:
+            if rpm["arch"] == "src" or rpm["arch"] == arch:
+                # print(f"{rpm}\n")
 
-            # Compile the path (relative to build_path) where an rpm belongs
-            rpm_path = f"{arch}/{rpm["name"]}-{rpm["version"]}-{rpm["release"]}.{arch}.rpm"
-            # print(f" rpm_path: {type(rpm_path)} {rpm_path}")
-            
-            download_url = f"{build_path}/{rpm_path}"
-            # print(f"\n download_url: {type(download_url)} {download_url}\n")
+                # Compile the path (relative to build_path) where an rpm belongs
+                # rpm_path = f"{arch}/{rpm["name"]}-{rpm["version"]}-{rpm["release"]}.{arch}.rpm"
+                rpm_path = f"{rpm["arch"]}/{rpm["name"]}-{rpm["version"]}-{rpm["release"]}.{rpm["arch"]}.rpm"
+                # print(f" rpm_path: {type(rpm_path)} {rpm_path}")
+                
+                download_url = f"{build_path}/{rpm_path}"
+                # print(f"\n download_url: {type(download_url)} {download_url}\n")
 
-            rpm["download_url"] = download_url
-            # print(f"\n rpm[\"download_url\"]: {type(rpm["download_url"])} {rpm["download_url"]}\n")
+                rpm["download_url"] = download_url
+                # print(f"\n rpm[\"download_url\"]: {type(rpm["download_url"])} {rpm["download_url"]}\n")
 
-            if is_debug(rpm["name"]):
-                continue
-            rpms.append(rpm)
+                if is_debug(rpm["name"]):
+                    continue
+                rpms.append(rpm)
 
         # print(f"\n rpms: {type(rpms)} {rpms}\n")
         
         for index, rpm_from_list in enumerate(rpms):
             # print(f"\n {index}. rpm_from_list[\"download_url\"]: {type(rpm_from_list["download_url"])} {rpm_from_list["download_url"]}\n")
 
-            rpm_full_name = f"{rpm_from_list["name"]}-{rpm_from_list["version"]}-{rpm_from_list["release"]}.{arch}.rpm"
+            # rpm_full_name = f"{rpm_from_list["name"]}-{rpm_from_list["version"]}-{rpm_from_list["release"]}.{arch}.rpm"
+            rpm_full_name = f"{rpm_from_list["name"]}-{rpm_from_list["version"]}-{rpm_from_list["release"]}.{rpm_from_list["arch"]}.rpm"
             rpms_download_path = f"{rpms_download_dir}/{rpm_full_name}"
-            # print(f" \n {index}. rpms_download_path {rpms_download_path}")
+            print(f" \n {index}. rpms_download_path {rpms_download_path}")
 
             try:
                 response = requests.get(rpm_from_list["download_url"], allow_redirects=True)

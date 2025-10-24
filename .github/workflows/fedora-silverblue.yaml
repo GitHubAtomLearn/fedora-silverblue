@@ -49,6 +49,7 @@ jobs:
   build-push-image:
     runs-on: ubuntu-24.04
     container:
+      # image: quay.io/podman/stable:latest
       image: quay.io/containers/podman:latest
       options: "--security-opt=label=disable --privileged --user 0:0 --device=/dev/kvm --device=/dev/fuse \
             --volume /:/run/host:rw --volume /mnt:/mnt --volume /var/run/docker.sock:/var/run/docker.sock \
@@ -81,16 +82,17 @@ jobs:
       - name: Install tools in the container
         run: |
           set -xeuo pipefail
-          dnf --refresh install -y \
+          dnf --refresh install --assumeyes --allowerasing \
+            --no-docs --disable-repo fedora-cisco-openh264
+            --exclude container-selinux \
             git-core jq rpm-ostree buildah skopeo \
-            --exclude container-selinux --no-docs
           dnf clean all
 
-      - name: Set alternate location of image store
-        run: |
-            set -xeuo pipefail
-            sed -i 's/^\# imagestore = ""$/imagestore = "\/mnt"/' /usr/share/containers/storage.conf
-            grep -E '^imagestore = ".*"$' /usr/share/containers/storage.conf
+      # - name: Set alternate location of image store
+      #   run: |
+      #       set -xeuo pipefail
+      #       sed -i 's/^\# imagestore = ""$/imagestore = "\/mnt"/' /usr/share/containers/storage.conf
+      #       grep -E '^imagestore = ".*"$' /usr/share/containers/storage.conf
 
       - name: Checkout Repo
         uses: actions/checkout@v5
