@@ -102,7 +102,9 @@ function main() {
     #     --directory /tmp/scripts /tmp/scripts/koji-download-build.py
     # /tmp/scripts/.venv/bin/python /tmp/scripts/koji-download-build.py
     # ls -Zlathri /tmp/rpms
-    dnf install --assumeyes --refresh --allowerasing /tmp/rpms/*.rpm
+    # dnf install --assumeyes --refresh --allowerasing /tmp/rpms/*.rpm
+    dnf install --assumeyes --refresh --no-allow-downgrade /tmp/rpms/*.rpm
+    dnf upgrade --assumeyes --refresh --no-allow-downgrade --allowerasing
     # dnf remove --assumeyes --refresh python3-devel krb5-devel gcc
     # dnf remove --assumeyes --refresh --no-autoremove python3-devel krb5-devel gcc
 
