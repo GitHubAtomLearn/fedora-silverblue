@@ -68,32 +68,32 @@ ENV UV_NO_DEV=1
 # https://docs.astral.sh/uv/reference/cli/#uv-sync--locked
 ENV UV_LOCKED=1
 
-# Set the working directory
-WORKDIR /opt/koji-download-build
+# # Set the working directory
+# WORKDIR /opt/koji-download-build
 
-# Install the dependencies using the lockfile and settings
-# RUN --mount=type=cache,target=/root/.cache/uv \
-RUN --mount=type=cache,target=/var/roothome/.cache/uv \
-    --mount=type=bind,source=scripts/koji-download-build/uv.lock,target=uv.lock,ro,relabel=private \
-    --mount=type=bind,source=scripts/koji-download-build/pyproject.toml,target=pyproject.toml,ro,relabel=private <<EORUN
-    set -xeuo pipefail
-    # pwd
-    # ls -Zlathri
-    uv sync --no-install-local --no-install-project --no-install-workspace
-EORUN
+# # Install the dependencies using the lockfile and settings
+# # RUN --mount=type=cache,target=/root/.cache/uv \
+# RUN --mount=type=cache,target=/var/roothome/.cache/uv \
+#     --mount=type=bind,source=scripts/koji-download-build/uv.lock,target=uv.lock,ro,relabel=private \
+#     --mount=type=bind,source=scripts/koji-download-build/pyproject.toml,target=pyproject.toml,ro,relabel=private <<EORUN
+#     set -xeuo pipefail
+#     # pwd
+#     # ls -Zlathri
+#     uv sync --no-install-local --no-install-project --no-install-workspace
+# EORUN
 
-# Add the rest of the source code and install it
-# Installing separately from its dependencies allows optimal layer caching
-COPY scripts/koji-download-build /opt/koji-download-build
-RUN --mount=type=cache,target=/var/roothome/.cache/uv <<EORUN
-    set -xeuo pipefail
-    # pwd
-    # ls -Zlathri
-    uv sync --no-install-local --no-install-project --no-install-workspace
-EORUN
+# # Add the rest of the source code and install it
+# # Installing separately from its dependencies allows optimal layer caching
+# COPY scripts/koji-download-build /opt/koji-download-build
+# RUN --mount=type=cache,target=/var/roothome/.cache/uv <<EORUN
+#     set -xeuo pipefail
+#     # pwd
+#     # ls -Zlathri
+#     uv sync --no-install-local --no-install-project --no-install-workspace
+# EORUN
 
-# Place executables in the environment at the front of the PATH environment variable
-ENV PATH="/opt/koji-download-build/.venv/bin:${PATH}"
+# # Place executables in the environment at the front of the PATH environment variable
+# ENV PATH="/opt/koji-download-build/.venv/bin:${PATH}"
 
 # Download RPMs of the latest builds for the f44-updates-testing tag
 # RUN <<EORUN
@@ -209,7 +209,7 @@ COPY usr usr
 COPY etc etc
 
 # COPY --from=rpms /tmp/rpms /tmp/rpms
-COPY --from=builder /tmp/rpms /tmp/rpms
+# COPY --from=builder /tmp/rpms /tmp/rpms
 
 # COPY --from=builder /usr/src/nvidia* /usr/src/nvidia
 # COPY --from=builder /var/lib/dkms/ /var/lib/dkms/
