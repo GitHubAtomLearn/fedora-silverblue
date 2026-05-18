@@ -1,0 +1,350 @@
+## Download RPMs of the latest builds for the f44-updates-testing tag
+
+# FROM quay.io/fedora/fedora-minimal:44 AS rpms
+
+ARG BASE_REPOSITORY
+ARG VERSION_ID
+
+ARG CHUNKAH_REPOSITORY
+ARG CHUNKAH_TAG
+ARG CHUNKAH_TMP_DIR
+ARG CHUNKAH_TMP_IMAGE
+ARG CHUNKAH_CONFIG_STR
+
+FROM ${BASE_REPOSITORY}:${VERSION_ID} AS builder
+
+RUN <<EORUN
+    set -xeuo pipefail
+    export FORCE_COLUMNS=134
+    # Install the required packages
+    # sed --in-place "s/enabled=1/enabled=0/" "/etc/yum.repos.d/fedora-cisco-openh264.repo"
+
+    dnf upgrade --enablerepo=updates-testing --assumeyes --refresh --no-allow-downgrade --allowerasing
+
+    dnf --assumeyes --refresh install --allowerasing --no-allow-downgrade \
+        --no-docs --disable-repo fedora-cisco-openh264 \
+        --setopt=install_weak_deps=False \
+        --exclude container-selinux \
+        python3-devel krb5-devel gcc
+        # rust cargo rust-openssl-devel
+
+    # # Install the dependencies
+    # uv sync --directory /koji-download-build \
+    #     --no-install-local --no-install-project --no-install-workspace
+    # # Download RPMs of the latest builds for the f44-updates-testing tag
+    # /koji-download-build/koji-download-build.py
+EORUN
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Compile Python files to bytecode after installation.
+# https://docs.astral.sh/uv/reference/cli/#uv-sync--compile-bytecode
+ENV UV_COMPILE_BYTECODE=1
+
+# The method to use when installing packages from the global cache.
+# https://docs.astral.sh/uv/reference/cli/#uv-sync--link-mode
+ENV UV_LINK_MODE=copy
+
+# Configure the Python directory so it is consistent.
+# The directory to store the Python installation in.
+# https://docs.astral.sh/uv/reference/cli/#uv-python-install--install-dir
+# ENV UV_PYTHON_INSTALL_DIR=/opt/python
+ENV UV_PYTHON_INSTALL_DIR=/var/opt/python
+
+# Whether uv should prefer system or managed Python versions.
+# Only use the managed Python version.
+# https://docs.astral.sh/uv/reference/environment/#uv_python_preference
+# ENV UV_PYTHON_PREFERENCE=only-managed
+
+# Require use of uv-managed Python versions.
+# https://docs.astral.sh/uv/reference/cli/#uv-python-install--managed-python
+ENV UV_MANAGED_PYTHON=1
+
+# Disable the development dependency group
+# https://docs.astral.sh/uv/reference/cli/#uv-sync--no-dev
+ENV UV_NO_DEV=1
+
+# Assert that the uv.lock will remain unchanged.
+# https://docs.astral.sh/uv/reference/cli/#uv-sync--locked
+ENV UV_LOCKED=1
+
+# Set the working directory
+WORKDIR /opt/koji-download-build
+
+# Install the dependencies using the lockfile and settings
+# RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,target=/var/roothome/.cache/uv \
+    --mount=type=bind,source=scripts/koji-download-build/uv.lock,target=uv.lock,ro,relabel=private \
+    --mount=type=bind,source=scripts/koji-download-build/pyproject.toml,target=pyproject.toml,ro,relabel=private <<EORUN
+    set -xeuo pipefail
+    # pwd
+    # ls -Zlathri
+    uv sync --no-install-local --no-install-project --no-install-workspace
+EORUN
+
+# Add the rest of the source code and install it
+# Installing separately from its dependencies allows optimal layer caching
+COPY scripts/koji-download-build /opt/koji-download-build
+RUN --mount=type=cache,target=/var/roothome/.cache/uv <<EORUN
+    set -xeuo pipefail
+    # pwd
+    # ls -Zlathri
+    uv sync --no-install-local --no-install-project --no-install-workspace
+EORUN
+
+# Place executables in the environment at the front of the PATH environment variable
+ENV PATH="/opt/koji-download-build/.venv/bin:${PATH}"
+
+# Download RPMs of the latest builds for the f44-updates-testing tag
+RUN <<EORUN
+    set -xeuo pipefail
+    /opt/koji-download-build/koji-download-build.py
+    # ls -Zlathri /tmp/rpms
+EORUN
+
+# # Install bcvk
+# RUN --mount=type=cache,target=/var/roothome/.cache <<EORUN
+#     set -xeuo pipefail
+#     cargo install --locked --git https://github.com/bootc-dev/bcvk bcvk
+# EORUN
+
+# COPY scripts/build-kmod-nvidia-open-dkms.sh /opt/build-kmod-nvidia-open-dkms/
+# RUN <<EORUN
+#     set -xeuo pipefail
+#     /opt/build-kmod-nvidia-open-dkms/build-kmod-nvidia-open-dkms.sh
+# EORUN
+
+COPY scripts/nvidia/build-nvidia-negativo17.sh /opt/nvidia/
+RUN --mount=type=cache,target=/var/roothome/.cache \
+    --mount=type=cache,dst=/var/cache/dnf \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
+    <<EORUN
+    set -xeuo pipefail
+    export FORCE_COLUMNS=134
+    /opt/nvidia/build-nvidia-negativo17.sh
+    dnf clean all
+EORUN
+
+# Build the bootable container image
+
+# FROM quay.io/fedora-ostree-desktops/silverblue:44
+
+# ARG BASE_REPOSITORY=quay.io/fedora-ostree-desktops/silverblue
+# ARG VERSION_ID=44
+# ARG CHUNKAH_CONFIG_STR
+
+# FROM ${BASE_REPOSITORY}:${VERSION_ID}
+FROM ${BASE_REPOSITORY}:${VERSION_ID} AS source
+
+# Keep container image for 3 weeks
+# LABEL quay.expires-after=3w
+
+LABEL org.opencontainers.image.title="Fedora Silverblue 44"
+LABEL org.opencontainers.image.description="Customized image of Fedora Silverblue 44"
+LABEL org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
+LABEL org.opencontainers.image.licenses="MIT"
+#LABEL quay.expires-after=""
+
+# # Copy custom config to /usr & /etc
+# COPY usr usr
+# COPY etc etc
+
+# COPY scripts/initramfs-zstd.sh /tmp
+# COPY scripts/initramfs.sh /tmp
+# COPY scripts/install-qemu.sh /tmp
+# COPY scripts/install-libvirtd.sh /tmp
+# COPY scripts/fedora-packages.sh /tmp
+# COPY scripts/remove-fedora-packages.txt /tmp
+# COPY scripts/install-fedora-packages.txt /tmp
+# COPY scripts/install-vscodium.sh /tmp
+
+# COPY scripts /tmp/scripts
+
+# COPY --from=rpms /tmp/rpms /tmp/rpms
+
+# - Install RPM Fusion Free and Nonfree Repositories
+# - Install NVIDIA driver
+# - Replace nano with vim
+# - Remove plymouth
+# - Replace noopenh264 with openh264
+# - Remove and Install various packages
+# - Enable libvirtd
+# - Remove SetUID/SetGID bits
+# - Cleanup
+
+# WORKDIR /tmp
+# RUN ls -Zlathri
+
+# RUN --mount=type=cache,target=/var/roothome/.cache \
+#     --mount=type=cache,dst=/var/cache/dnf \
+#     --mount=type=cache,dst=/var/cache/libdnf5 \
+#     <<EORUN
+# RUN --mount=type=bind,source=/,target=/,readwrite <<EORUN
+# RUN <<EORUN
+#     set -xeuo pipefail
+#     export FORCE_COLUMNS=134
+
+#     # mkdir --parents /etc/backgrounds/f44/default
+#     # mv /usr/share/backgrounds/f44/default/f44.xml /etc/backgrounds/f44/default
+#     # ln --symbolic /etc/backgrounds/f44/default/f44.xml /usr/share/backgrounds/f44/default
+
+#     # https://www.mankier.com/1/gpg#Files-GNUPGHOME
+#     export GNUPGHOME="/tmp/.gnupg"
+
+#     dnf upgrade --enablerepo=updates-testing --assumeyes --refresh --no-allow-downgrade --allowerasing
+
+#     # ls -Zlathri
+
+#     # /tmp/scripts/initramfs.sh
+
+#     # dnf swap --assumeyes --refresh --allowerasing nano vim-default-editor
+#     dnf swap --assumeyes --refresh --allowerasing --setopt=protected_packages= sudo sudo-rs
+#     # dnf swap --assumeyes --refresh --allowerasing noopenh264 mozilla-openh264
+#     # rpm-ostree cleanup --repomd
+#     # dnf clean all
+# EORUN
+
+# Copy custom config to /usr & /etc
+COPY usr usr
+COPY etc etc
+
+# COPY --from=rpms /tmp/rpms /tmp/rpms
+COPY --from=builder /tmp/rpms /tmp/rpms
+
+# COPY --from=builder /usr/src/nvidia* /usr/src/nvidia
+# COPY --from=builder /var/lib/dkms/ /var/lib/dkms/
+COPY --from=builder /opt/nvidia/modules-extra /usr/lib/modules/extra
+
+# COPY --from=builder /var/roothome/.cargo/bin/bcvk /usr/bin/
+
+COPY scripts /tmp/scripts
+
+# RUN --mount=type=cache,target=/var/roothome/.cache \
+#     --mount=type=cache,dst=/var/cache/dnf \
+#     --mount=type=cache,dst=/var/cache/libdnf5 \
+#     <<EORUN
+RUN <<EORUN
+    set -xeuo pipefail
+    export FORCE_COLUMNS=134
+
+    # https://www.mankier.com/1/gpg#Files-GNUPGHOME
+    export GNUPGHOME="/tmp/.gnupg"
+
+    dnf upgrade --enablerepo=updates-testing --assumeyes --refresh --no-allow-downgrade --allowerasing
+
+    /tmp/scripts/initramfs.sh
+
+    # /tmp/scripts/install-kmod-nvidia-open-dkms-toolkit.sh
+    /tmp/scripts/nvidia/install-nvidia-negativo17.sh
+
+    dnf swap --assumeyes --refresh --allowerasing nano vim-default-editor
+
+    # /tmp/scripts/initramfs-zstd.sh
+    # /tmp/scripts/fedora-packages.sh
+    # /tmp/scripts/install-qemu.sh
+    # /tmp/scripts/install-libvirtd.sh
+    
+    /tmp/scripts/install-vscodium.sh
+
+    # /tmp/scripts/koji-download-build/run-koji-download-build.sh
+    dnf install --assumeyes --refresh --no-allow-downgrade --allowerasing \
+        /tmp/rpms/*.rpm
+    # --setopt=install_weak_deps=False \
+    # --exclude gcc \
+
+    # dnf install --assumeyes --refresh --allowerasing \
+    # --exclude=mercurial,subversion \
+    # $(grep -Ev '^#|^$' /tmp/scripts/dnf-install-fedora-packages.txt)
+
+    dnf upgrade --enablerepo=updates-testing --assumeyes --refresh --no-allow-downgrade --allowerasing
+
+    rpm --erase --nodeps \
+        $(grep --extended-regexp --invert-match '^#|/|^$' /tmp/scripts/rpm-erase-fedora-packages.txt)
+    # dnf remove --assumeyes --refresh --no-autoremove \
+        # $(grep --extended-regexp --invert-match '^#|^$' /tmp/scripts/dnf-remove-fedora-packages.txt)
+    dnf remove --assumeyes --refresh \
+        $(grep --extended-regexp --invert-match '^#|^$' /tmp/scripts/dnf-remove-fedora-packages.txt)
+    # --setopt=excludepkgs=golang \
+    # --exclude golang \
+
+    groups=("usbmon" "wireshark")
+    for group in ${groups[@]}; do
+        groupdel ${group}
+    done
+EORUN
+
+# Cleanup
+RUN <<EORUN
+    set -xeuo pipefail
+    export FORCE_COLUMNS=134
+
+    rm --recursive --force \
+        /usr/etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo \
+        /usr/etc/yum.repos.d/fedora-multimedia.repo \
+        /usr/etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo \
+        /usr/etc/yum.repos.d/rpmfusion-nonfree-steam.repo
+
+    rm --recursive --force /var/lib/unbound/root.key
+    chmod ug-s \
+        /usr/bin/chage \
+        /usr/bin/chfn \
+        /usr/bin/chsh \
+        /usr/bin/gpasswd \
+        /usr/bin/newgrp \
+        /usr/bin/passwd \
+        /usr/bin/vmware-user-suid-wrapper
+
+    rpm-ostree cleanup --repomd
+    dnf clean all
+
+    # + rm --recursive --force /var /run /tmp /boot
+    # rm: cannot remove '/run/.containerenv': Device or resource busy
+    # rm: cannot remove '/run/secrets': Device or resource busy
+    # rm: cannot remove '/run/systemd/resolve/stub-resolv.conf': Device or resource busy
+
+    du --human-readable --total --max-depth=1 /run | \
+        sort --human-numeric-sort | \
+        grep --extended-regexp --invert-match '^0'
+    # ls -lah /run
+    # ls -lah /run/secrets
+    # ls -lah /run/systemd
+    # cat /run/.containerenv
+    # umount --all-targets --force --no-mtab --recursive --types tmpfs --verbose /run
+    # umount --all-targets --force --no-mtab --recursive --verbose /run
+    # rm --verbose --dir --recursive --force /run
+    # rm --recursive --force /var/* /tmp/* /boot/*
+    # rm --recursive --force /var /run /tmp /boot
+    rm --recursive --force /var /tmp /boot
+    # rm --recursive --force /var /boot /tmp/dracut /tmp/rpms /tmp/scripts
+    # rm --recursive --force /var /tmp /boot /usr/src/nvidia-* ${local_repo}
+    # mkdir /var /run /tmp /boot
+    mkdir /var /tmp /boot
+    # mkdir /var /boot
+    ls -lathr /tmp
+    bootc container lint --no-truncate
+    # bootc container lint --no-truncate --fatal-warnings
+EORUN
+
+# # Rechunk
+# FROM ${CHUNKAH_REPOSITORY}:${CHUNKAH_TAG} AS chunkah
+
+# # Consume the build arguments in the build stage
+# ARG CHUNKAH_TMP_DIR
+# ARG CHUNKAH_TMP_IMAGE
+# ARG CHUNKAH_CONFIG_STR
+
+# # WORKDIR ${CHUNKAH_TMP_DIR}
+
+# RUN --mount=from=source,src=/,target=/chunkah,ro \
+#     --mount=type=bind,target=${CHUNKAH_TMP_DIR},rw \
+#         chunkah build \
+#             --verbose \
+#             --prune /sysroot/ \
+#             --max-layers 128 \
+#             --label ostree.commit- \
+#             --label ostree.final-diffid- \
+#             --skip-special-files \
+#                 > ${CHUNKAH_TMP_DIR}/${CHUNKAH_TMP_IMAGE}
+
+# # Final image
+# FROM oci-archive:${CHUNKAH_TMP_DIR}/${CHUNKAH_TMP_IMAGE}

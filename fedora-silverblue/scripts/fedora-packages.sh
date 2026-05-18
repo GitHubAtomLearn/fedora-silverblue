@@ -3,6 +3,7 @@
 # set -euo pipefail
 # set -x
 set -xeuo pipefail
+export FORCE_COLUMNS=134
 
 main() {
 
@@ -53,20 +54,23 @@ main() {
     dnf swap --assumeyes --refresh --allowerasing noopenh264 mozilla-openh264
 
     # dnf -y remove --no-autoremove --noautoremove $(grep -Ev '^#|^$' /tmp/remove-fedora-packages.txt)
-    dnf remove --assumeyes --refresh $(grep --extended-regexp --invert-match '^#|^$' /tmp/scripts/remove-fedora-packages.txt)
+    dnf remove --assumeyes --refresh $(grep --extended-regexp --invert-match '^#|^$' /tmp/scripts/dnf-remove-fedora-packages.txt)
     # dnf -y remove --no-autoremove --noautoremove plymouth
     # dnf -y remove --no-autoremove --noautoremove yelp
     # dnf -y remove --no-autoremove --noautoremove gnome-tour
     # dnf -y remove --no-autoremove --noautoremove malcontent
     # rpm --erase --nodeps $(grep -Ev '^#|^$' /tmp/remove-fedora-packages.txt)
     # rpm -qa | grep malcontent
-    rpm --erase --nodeps malcontent
-    rpm --erase --nodeps malcontent-control
-    rpm --erase --nodeps malcontent-ui-libs
+    # rpm --erase --nodeps malcontent
+    # rpm --erase --nodeps malcontent-control
+    # rpm --erase --nodeps malcontent-ui-libs
     # rpm --erase --nodeps malcontent-libs
     # rpm -qa | grep malcontent
+    # rpm --erase --nodeps gcc-go
 
-    dnf install --assumeyes --refresh --allowerasing $(grep -Ev '^#|^$' /tmp/scripts/install-fedora-packages.txt)
+    # dnf install --assumeyes --refresh --allowerasing $(grep -Ev '^#|^$' /tmp/scripts/install-fedora-packages.txt)
+
+    # dnf remove --assumeyes --refresh --no-autoremove python3-devel krb5-devel gcc
 
     # systemctl enable libvirtd.socket
     # systemctl enable virtqemud.socket virtnetworkd.socket virtstoraged.socket \

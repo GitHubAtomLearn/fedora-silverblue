@@ -6,6 +6,7 @@
 
 set -euo pipefail
 # set -x
+export FORCE_COLUMNS=134
 
 function main() {
     if [[ "${EUID}" -ne 0 ]]; then
@@ -14,18 +15,19 @@ function main() {
     fi
 
     # https://www.freedesktop.org/software/systemd/man/latest/systemctl.html#show%20PATTERN%E2%80%A6%7CJOB%E2%80%A6
-    podman_socket_active_state=$(systemctl show podman.socket -P ActiveState)
+    local -r podman_socket_active_state=$(systemctl show podman.socket -P ActiveState)
     if [[ "${podman_socket_active_state}" != "active" ]]; then
         systemctl start podman.socket
     fi
 
-    container_name="bci"
-    # os_repository="localhost/bci"
-    os_repository="quay.io/operatement/bci"
-    os_tag="latest"
-    os_image=${os_repository}:${os_tag}
-    os_key="https://raw.githubusercontent.com/GitHubAtomLearn/bci/refs/heads/main/quay.io-operatement-bci.pub"
-    cosign_image="ghcr.io/sigstore/cosign/cosign:latest"
+    local -r container_name="bci"
+    # local -r os_repository="localhost/bci"
+    local -r os_repository="quay.io/operatement/bci"
+    local -r os_tag="latest"
+    local -r os_image=${os_repository}:${os_tag}
+    local -r os_key="https://raw.githubusercontent.com/GitHubAtomLearn/bci/refs/heads/main/quay.io-operatement-bci.pub"
+    # local -r cosign_image="ghcr.io/sigstore/cosign/cosign:latest"
+    local -r cosign_image="ghcr.io/sigstore/cosign/cosign:v3.0.2"
 
     if ! [[ ${os_repository} =~ ^localhost/.* ]]; then
         podman image pull ${os_image} ${cosign_image}
@@ -63,6 +65,7 @@ function main() {
         --tty \
         --volume /var/lib/containers/storage:/var/lib/containers/storage \
         --volume /run/podman:/run/podman \
+        --volume /tmp:/tmp \
         --volume .:/data \
         --workdir /data \
         --cap-add=sys_admin,mknod \
@@ -73,6 +76,7 @@ function main() {
         "${@}"
 }
 
+# --volume ./scripts/koji-download-build:/koji-download-build \
 # --volume /dev:/dev \
 # --volume /run/udev:/run/udev \
 # --volume .:/data \

@@ -25,7 +25,8 @@ main() {
     # omit=$(omit_dracut_modules_list)
 
     export DRACUT_NO_XATTR=1
-    kver=$(ls /usr/lib/modules)
+    # kver=$(ls /usr/lib/modules)
+    kver=$(rpm --query --queryformat "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
     # stock_arguments=$(lsinitrd "/lib/modules/${kver}/initramfs.img" |\
     #     grep --extended-regexp '^Arguments: ' |\
     #     sed 's/^Arguments: //')

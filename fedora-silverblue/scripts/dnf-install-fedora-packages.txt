@@ -1,11 +1,11 @@
 # These packages will be installed in the container image.
 
-# Required packages for Koji
-python3-devel
-krb5-devel
-gcc
+## Required packages for Koji
+# python3-devel
+# krb5-devel
+# gcc
 
-# netcat
+# go
 
 # sysprof
 # smartmontools
@@ -33,3 +33,18 @@ gcc
 # virt-install
 
 # virt-manager
+
+# rust-bootupd
+# bootc
+# ostree
+# rpm-ostree
+# podman
+# buildah
+# skopeo
+# libvirt
+# qemu
+# golang
+
+bcvk
+gopls
+inotify-tools

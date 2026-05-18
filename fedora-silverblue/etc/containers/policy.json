@@ -56,6 +56,15 @@
                     }
                 }
             ],
+            "quay.io/travier": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/quay.io-travier-containers.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
             "": [
                 {
                     "type": "insecureAcceptAnything"
@@ -120,3 +129,4 @@
         }
     }
 }
+

@@ -1,0 +1,36 @@
+// Packages to remove from the container image
+// via RPM package manager.
+# gcc
+# python3-devel
+# krb5-devel
+
+# sudo
+# sudo-python-plugin
+
+malcontent
+malcontent-control
+malcontent-ui-libs
+# malcontent-libs
+
+mdadm
+# noopenh264
+
+// Remove GNOME-related packages
+yelp
+gnome-tour
+# gweather-locations
+# gweather-locations-common
+
+// Remove packages installed as dependencies
+// for installing NVIDIA CUDA driver and tools.
+grubby
+kernel-devel-matched
+kmodtool
+patch
+python3-progressbar2
+python3-rpm
+python3-typing-extensions
+python3-utils
+rpm-build
+rpmdevtools
+systemd-rpm-macros

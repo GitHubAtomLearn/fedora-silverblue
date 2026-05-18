@@ -1,0 +1,103 @@
+# Packages to remove from the container image
+# via DNF package manager.
+
+# Remove common packages
+amd-gpu-firmware
+atheros-firmware
+b43-fwcutter
+b43-openfwwf
+bluez-cups
+brcmfmac-firmware
+brltty
+cups
+cups-browsed
+cups-filters
+default-editor
+gamemode
+gutenprint
+gutenprint-cups
+hplip
+hyperv-daemons
+iwlegacy-firmware
+iwlwifi-dvm-firmware
+iwlwifi-mvm-firmware
+libertas-firmware
+lrzsz
+mpage
+mt7xxx-firmware
+nxpwireless-firmware
+orca
+paps
+plymouth
+plymouth-core-libs
+plymouth-graphic-libs
+plymouth-graphics-libs
+plymouth-plugin-label
+plymouth-plugin-two-step
+plymouth-scripts
+plymouth-system-theme
+plymouth-theme-spinner
+qcom-wwan-firmware
+speech-dispatcher
+system-config-printer-udev
+tiwilink-firmware
+vim-minimal
+wget
+wget2-wget
+wpa_supplicant
+
+7zip
+
+# Remove x86_64 packages
+amd-ucode-firmware
+cirrus-audio-firmware
+virtualbox-guest-additions
+
+firefox
+firefox-langpacks
+noopenh264
+python3-devel
+krb5-devel
+
+abrt
+abrt-dbus
+python3-abrt
+abrt-addon-kerneloops
+abrt-addon-ccpp
+abrt-addon-vmcore
+abrt-addon-pstoreoops
+python3-abrt-addon
+abrt-plugin-bodhi
+abrt-addon-xorg
+abrt-tui
+abrt-gui-libs
+abrt-gui
+abrt-desktop
+abrt-cli
+
+# gcc
+
+# Remove optional CUPS drivers
+c2esp
+dymo-cups-drivers
+foomatic
+foomatic-db
+foomatic-db-filesystem
+foomatic-db-ppds
+pnm2ppa
+ptouch-driver
+splix
+
+# Remove GNOME-related packages
+# rygel
+# glycin
+# glycin-gtk4-libs
+# gnome-backgrounds
+# gnome-browser-connector
+# gnome-epub-thumbnailer
+# gnome-user-docs
+
+# Remove Fedora-related packages
+fedora-workstation-backgrounds
+f44-backgrounds-base
+f44-backgrounds-gnome

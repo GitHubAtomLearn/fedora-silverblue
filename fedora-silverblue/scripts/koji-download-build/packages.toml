@@ -1,17 +1,20 @@
 # koji-download-build.py packages list
 
 # [packages]
+# sudo-rs = false
 rust-bootupd.debug = false
 bootc.debug = false
+bcvk.debug = false
 ostree.debug = false
 rpm-ostree.debug = false
 podman.debug = false
 buildah.debug = false
 skopeo.debug = false
-"python3.14".debug = false
+# "python3.14".debug = false
 libvirt.debug = false
 qemu.debug = false
-krb5.debug = false
-gcc.debug = false
-golang.debug = false
+# krb5.debug = false
+# gcc.debug = false
+# golang.debug = false
 gopls.debug = false
+# inotify-tools.debug = false

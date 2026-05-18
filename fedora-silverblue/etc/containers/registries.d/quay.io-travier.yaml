@@ -1,0 +1,4 @@
+docker:
+  quay.io/travier:
+    use-sigstore-attachments: true
+

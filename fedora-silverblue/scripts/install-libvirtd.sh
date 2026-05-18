@@ -38,6 +38,7 @@ main() {
     qemu-img \
     qemu-kvm \
     swtpm \
+    edk2-ovmf \
     virt-install
 
     dnf clean all

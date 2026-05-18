@@ -3,9 +3,9 @@ name: "Build Fedora Silverblue Image"
 env:
   NAME: "fedora-silverblue"
   REGISTRY: "quay.io/operatement"
-  BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:43"
-  # Temporary switch to quay.io/fedora/fedora-silverblue:43
-  # BASEIMAGE: "quay.io/fedora/fedora-silverblue:43"
+  BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:44"
+  # Temporary switch to quay.io/fedora/fedora-silverblue:44
+  # BASEIMAGE: "quay.io/fedora/fedora-silverblue:44"
 
 on:
 
@@ -25,7 +25,7 @@ on:
 
   schedule:
     - cron: '0 4 * * *'
-    # Temporary switch to quay.io/fedora/fedora-silverblue:43
+    # Temporary switch to quay.io/fedora/fedora-silverblue:44
     # - cron: '30 13 * * *'
 
   workflow_dispatch:
@@ -125,9 +125,9 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.NAME }}
-          # tags: '43'
+          # tags: '44'
           tags: build
-          containerfiles: ${{ env.NAME }}/Containerfile-43
+          containerfiles: ${{ env.NAME }}/Containerfile-44
           context: ${{ env.NAME }}
           layers: false
           oci: true
@@ -136,7 +136,7 @@ jobs:
       - name: Rechunk container image
         run: |
           set -xexo pipefail
-          # podman image rm quay.io/fedora-ostree-desktops/silverblue:43
+          # podman image rm quay.io/fedora-ostree-desktops/silverblue:44
           podman image prune --force --build-cache
           podman image prune --force
           # rpm-ostree experimental compose build-chunked-oci \
@@ -159,19 +159,19 @@ jobs:
         with:
           image: ${{ env.NAME }}
           # tags: latest
-          tags: '43'
+          tags: '44'
           containerfiles: ${{ env.NAME }}/Containerfile.labels
           context: ${{ env.NAME }}
           layers: false
           oci: true
           labels: |
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
-            org.opencontainers.image.title="Fedora Silverblue 43"
-            org.opencontainers.image.description="Customized image of Fedora Silverblue 43"
+            org.opencontainers.image.title="Fedora Silverblue 44"
+            org.opencontainers.image.description="Customized image of Fedora Silverblue 44"
             org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
             org.opencontainers.image.licenses="MIT"
 
-      # Silverblue 43 Container Image
+      # Silverblue 44 Container Image
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v4.0.0
@@ -195,7 +195,7 @@ jobs:
           password: ${{ secrets.BOT_SECRET }}
           image: ${{ env.NAME }}
           registry: ${{ env.REGISTRY }}
-          tags: '43'
+          tags: '44'
           extra-args: |
             --compression-format=zstd
         # --compression-level=19
