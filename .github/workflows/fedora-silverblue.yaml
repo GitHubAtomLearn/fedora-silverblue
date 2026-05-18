@@ -134,6 +134,9 @@ jobs:
           context: ${{ env.NAME }}
           layers: false
           oci: true
+          build-args: |
+            BASE_REPOSITORY=${{ env.BASE_REPOSITORY }}
+            VERSION_ID=${{ env.VERSION_ID }}
           # labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
       - name: Rechunk container image
