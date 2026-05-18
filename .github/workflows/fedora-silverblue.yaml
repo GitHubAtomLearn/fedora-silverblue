@@ -3,7 +3,10 @@ name: "Build Fedora Silverblue Image"
 env:
   NAME: "fedora-silverblue"
   REGISTRY: "quay.io/operatement"
-  BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:44"
+  BASE_REPOSITORY: "quay.io/fedora-ostree-desktops/silverblue"
+  VERSION_ID: "44"
+
+  # BASEIMAGE: "quay.io/fedora-ostree-desktops/silverblue:44"
   # Temporary switch to quay.io/fedora/fedora-silverblue:44
   # BASEIMAGE: "quay.io/fedora/fedora-silverblue:44"
 
@@ -104,7 +107,7 @@ jobs:
           if [[ -n ${VERSION} ]]; then
             version="${VERSION}"
           else
-            version_base="$(skopeo inspect docker://${BASEIMAGE} | jq -r '.Labels."org.opencontainers.image.version"')"
+            version_base="$(skopeo inspect docker://${BASE_REPOSITORY}:{VERSION_ID} | jq -r '.Labels."org.opencontainers.image.version"')"
             version_derived="$(skopeo inspect docker://${REGISTRY}/${NAME} | jq -r '.Labels."org.opencontainers.image.version"' || true)"
             if [[ -z "${version_derived}" ]]; then
               version="${version_base}"
