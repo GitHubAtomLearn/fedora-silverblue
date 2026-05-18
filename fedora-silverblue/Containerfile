@@ -114,16 +114,16 @@ EORUN
 #     /opt/build-kmod-nvidia-open-dkms/build-kmod-nvidia-open-dkms.sh
 # EORUN
 
-COPY scripts/nvidia/build-nvidia-negativo17.sh /opt/nvidia/
-RUN --mount=type=cache,target=/var/roothome/.cache \
-    --mount=type=cache,dst=/var/cache/dnf \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    <<EORUN
-    set -xeuo pipefail
-    export FORCE_COLUMNS=134
-    /opt/nvidia/build-nvidia-negativo17.sh
-    dnf clean all
-EORUN
+# COPY scripts/nvidia/build-nvidia-negativo17.sh /opt/nvidia/
+# RUN --mount=type=cache,target=/var/roothome/.cache \
+#     --mount=type=cache,dst=/var/cache/dnf \
+#     --mount=type=cache,dst=/var/cache/libdnf5 \
+#     <<EORUN
+#     set -xeuo pipefail
+#     export FORCE_COLUMNS=134
+#     /opt/nvidia/build-nvidia-negativo17.sh
+#     dnf clean all
+# EORUN
 
 # Build the bootable container image
 
@@ -213,7 +213,7 @@ COPY --from=builder /tmp/rpms /tmp/rpms
 
 # COPY --from=builder /usr/src/nvidia* /usr/src/nvidia
 # COPY --from=builder /var/lib/dkms/ /var/lib/dkms/
-COPY --from=builder /opt/nvidia/modules-extra /usr/lib/modules/extra
+# COPY --from=builder /opt/nvidia/modules-extra /usr/lib/modules/extra
 
 # COPY --from=builder /var/roothome/.cargo/bin/bcvk /usr/bin/
 
@@ -235,7 +235,7 @@ RUN <<EORUN
     /tmp/scripts/initramfs.sh
 
     # /tmp/scripts/install-kmod-nvidia-open-dkms-toolkit.sh
-    /tmp/scripts/nvidia/install-nvidia-negativo17.sh
+    # /tmp/scripts/nvidia/install-nvidia-negativo17.sh
 
     dnf swap --assumeyes --refresh --allowerasing nano vim-default-editor
 
