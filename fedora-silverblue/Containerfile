@@ -19,7 +19,7 @@ RUN <<EORUN
     # Install the required packages
     # sed --in-place "s/enabled=1/enabled=0/" "/etc/yum.repos.d/fedora-cisco-openh264.repo"
 
-    dnf upgrade --enablerepo=updates-testing --assumeyes --refresh --no-allow-downgrade --allowerasing
+    # dnf upgrade --enablerepo=updates-testing --assumeyes --refresh --no-allow-downgrade --allowerasing
 
     dnf --assumeyes --refresh install --allowerasing --no-allow-downgrade \
         --no-docs --disable-repo fedora-cisco-openh264 \
@@ -96,11 +96,11 @@ EORUN
 ENV PATH="/opt/koji-download-build/.venv/bin:${PATH}"
 
 # Download RPMs of the latest builds for the f44-updates-testing tag
-RUN <<EORUN
-    set -xeuo pipefail
-    /opt/koji-download-build/koji-download-build.py
-    # ls -Zlathri /tmp/rpms
-EORUN
+# RUN <<EORUN
+#     set -xeuo pipefail
+#     /opt/koji-download-build/koji-download-build.py
+#     # ls -Zlathri /tmp/rpms
+# EORUN
 
 # # Install bcvk
 # RUN --mount=type=cache,target=/var/roothome/.cache <<EORUN
@@ -230,25 +230,25 @@ RUN <<EORUN
     # https://www.mankier.com/1/gpg#Files-GNUPGHOME
     export GNUPGHOME="/tmp/.gnupg"
 
-    dnf upgrade --enablerepo=updates-testing --assumeyes --refresh --no-allow-downgrade --allowerasing
+    # dnf upgrade --enablerepo=updates-testing --assumeyes --refresh --no-allow-downgrade --allowerasing
 
     /tmp/scripts/initramfs.sh
 
     # /tmp/scripts/install-kmod-nvidia-open-dkms-toolkit.sh
     # /tmp/scripts/nvidia/install-nvidia-negativo17.sh
 
-    dnf swap --assumeyes --refresh --allowerasing nano vim-default-editor
+    # dnf swap --assumeyes --refresh --allowerasing nano vim-default-editor
 
     # /tmp/scripts/initramfs-zstd.sh
     # /tmp/scripts/fedora-packages.sh
     # /tmp/scripts/install-qemu.sh
     # /tmp/scripts/install-libvirtd.sh
     
-    /tmp/scripts/install-vscodium.sh
+    # /tmp/scripts/install-vscodium.sh
 
     # /tmp/scripts/koji-download-build/run-koji-download-build.sh
-    dnf install --assumeyes --refresh --no-allow-downgrade --allowerasing \
-        /tmp/rpms/*.rpm
+    # dnf install --assumeyes --refresh --no-allow-downgrade --allowerasing \
+    #     /tmp/rpms/*.rpm
     # --setopt=install_weak_deps=False \
     # --exclude gcc \
 
@@ -256,21 +256,21 @@ RUN <<EORUN
     # --exclude=mercurial,subversion \
     # $(grep -Ev '^#|^$' /tmp/scripts/dnf-install-fedora-packages.txt)
 
-    dnf upgrade --enablerepo=updates-testing --assumeyes --refresh --no-allow-downgrade --allowerasing
+    # dnf upgrade --enablerepo=updates-testing --assumeyes --refresh --no-allow-downgrade --allowerasing
 
-    rpm --erase --nodeps \
-        $(grep --extended-regexp --invert-match '^#|/|^$' /tmp/scripts/rpm-erase-fedora-packages.txt)
+    # rpm --erase --nodeps \
+    #     $(grep --extended-regexp --invert-match '^#|/|^$' /tmp/scripts/rpm-erase-fedora-packages.txt)
     # dnf remove --assumeyes --refresh --no-autoremove \
         # $(grep --extended-regexp --invert-match '^#|^$' /tmp/scripts/dnf-remove-fedora-packages.txt)
-    dnf remove --assumeyes --refresh \
-        $(grep --extended-regexp --invert-match '^#|^$' /tmp/scripts/dnf-remove-fedora-packages.txt)
+    # dnf remove --assumeyes --refresh \
+    #     $(grep --extended-regexp --invert-match '^#|^$' /tmp/scripts/dnf-remove-fedora-packages.txt)
     # --setopt=excludepkgs=golang \
     # --exclude golang \
 
-    groups=("usbmon" "wireshark")
-    for group in ${groups[@]}; do
-        groupdel ${group}
-    done
+    # groups=("usbmon" "wireshark")
+    # for group in ${groups[@]}; do
+    #     groupdel ${group}
+    # done
 EORUN
 
 # Cleanup

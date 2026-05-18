@@ -139,43 +139,43 @@ jobs:
             VERSION_ID=${{ env.VERSION_ID }}
           # labels: org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
-      - name: Rechunk container image
-        run: |
-          set -xexo pipefail
-          # podman image rm quay.io/fedora-ostree-desktops/silverblue:44
-          podman image prune --force --build-cache
-          podman image prune --force
-          # rpm-ostree experimental compose build-chunked-oci \
-          rpm-ostree compose build-chunked-oci \
-            --bootc --format-version=1 \
-            --max-layers 96 \
-            --from localhost/${NAME}:build \
-            --output containers-storage:localhost/${NAME}:rechunked
-          # echo "Available disk storage:"
-          # df -h
-          # du -h -d 1 "${PWD}" | sort -h
+      # - name: Rechunk container image
+      #   run: |
+      #     set -xexo pipefail
+      #     # podman image rm quay.io/fedora-ostree-desktops/silverblue:44
+      #     podman image prune --force --build-cache
+      #     podman image prune --force
+      #     # rpm-ostree experimental compose build-chunked-oci \
+      #     rpm-ostree compose build-chunked-oci \
+      #       --bootc --format-version=1 \
+      #       --max-layers 96 \
+      #       --from localhost/${NAME}:build \
+      #       --output containers-storage:localhost/${NAME}:rechunked
+      #     # echo "Available disk storage:"
+      #     # df -h
+      #     # du -h -d 1 "${PWD}" | sort -h
 
-      - name: Write NOP Containerfile
-        run: |
-          set -xexo pipefail
-          echo "FROM localhost/${NAME}:rechunked" > ${NAME}/Containerfile.labels
+      # - name: Write NOP Containerfile
+      #   run: |
+      #     set -xexo pipefail
+      #     echo "FROM localhost/${NAME}:rechunked" > ${NAME}/Containerfile.labels
 
-      - name: Add labels to container image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: ${{ env.NAME }}
-          # tags: latest
-          tags: '44'
-          containerfiles: ${{ env.NAME }}/Containerfile.labels
-          context: ${{ env.NAME }}
-          layers: false
-          oci: true
-          labels: |
-            org.opencontainers.image.version=${{ steps.version.outputs.version }}
-            org.opencontainers.image.title="Fedora Silverblue 44"
-            org.opencontainers.image.description="Customized image of Fedora Silverblue 44"
-            org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
-            org.opencontainers.image.licenses="MIT"
+      # - name: Add labels to container image
+      #   uses: redhat-actions/buildah-build@v2
+      #   with:
+      #     image: ${{ env.NAME }}
+      #     # tags: latest
+      #     tags: '44'
+      #     containerfiles: ${{ env.NAME }}/Containerfile.labels
+      #     context: ${{ env.NAME }}
+      #     layers: false
+      #     oci: true
+      #     labels: |
+      #       org.opencontainers.image.version=${{ steps.version.outputs.version }}
+      #       org.opencontainers.image.title="Fedora Silverblue 44"
+      #       org.opencontainers.image.description="Customized image of Fedora Silverblue 44"
+      #       org.opencontainers.image.source="https://github.com/GitHubAtomLearn/fedora-silverblue"
+      #       org.opencontainers.image.licenses="MIT"
 
       # Silverblue 44 Container Image
 
