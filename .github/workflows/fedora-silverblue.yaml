@@ -107,7 +107,7 @@ jobs:
           if [[ -n ${VERSION} ]]; then
             version="${VERSION}"
           else
-            version_base="$(skopeo inspect docker://${BASE_REPOSITORY}:{VERSION_ID} | jq -r '.Labels."org.opencontainers.image.version"')"
+            version_base="$(skopeo inspect docker://${BASE_REPOSITORY}:${VERSION_ID} | jq -r '.Labels."org.opencontainers.image.version"')"
             version_derived="$(skopeo inspect docker://${REGISTRY}/${NAME} | jq -r '.Labels."org.opencontainers.image.version"' || true)"
             if [[ -z "${version_derived}" ]]; then
               version="${version_base}"
