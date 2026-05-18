@@ -201,10 +201,11 @@ jobs:
           password: ${{ secrets.BOT_SECRET }}
           image: ${{ env.NAME }}
           registry: ${{ env.REGISTRY }}
-          tags: '44'
+          # tags: '44'
+          tags: 'build'
           extra-args: |
             --compression-format=zstd
-        # --compression-level=19
+            --compression-level=19
 
       - name: Sign Silverblue Container Image
         if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
